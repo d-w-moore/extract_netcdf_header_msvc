@@ -35,11 +35,11 @@
 #endif
 
 #if irods_build
-#  define printf std::printf
-#  define fprintf std::fprintf
-#else
 #  define printf
 #  define fprintf
+#else
+#  define printf std::printf
+#  define fprintf std::fprintf
 #endif
 
 struct bad_input_file 
