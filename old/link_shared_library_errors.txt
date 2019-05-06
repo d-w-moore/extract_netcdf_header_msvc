@@ -1,0 +1,216 @@
+
+/bin/ld: /usr/lib64/libhdf5.a(H5.o): relocation R_X86_64_32 against undefined symbol `H5_debug_g' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5system.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5A.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Adeprec.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Aint.o): relocation R_X86_64_32 against symbol `H5_H5A_t_ptr_seq_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5AC.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5B2.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5B2cache.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5B2hdr.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5B2int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5B2test.o): relocation R_X86_64_32 against `.data' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5C.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5D.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Ddeprec.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Dint.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Dio.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Dlayout.o): relocation R_X86_64_32S against symbol `H5D_LOPS_EFL' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Dscatgath.o): relocation R_X86_64_32 against symbol `H5_size_t_seq_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Dselect.o): relocation R_X86_64_32 against symbol `H5_size_t_seq_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5E.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Edeprec.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Eint.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5F.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Faccum.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Fefc.o): relocation R_X86_64_32 against `.data' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Fio.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Fmount.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Fquery.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Fsfile.o): relocation R_X86_64_32 against `.data' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Fsuper.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Fsuper_cache.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FD.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FDcore.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FDfamily.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FDint.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FDlog.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FDmulti.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FDsec2.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FDspace.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FDstdio.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FL.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FO.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5G.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gbtree2.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gdeprec.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gent.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gint.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Glink.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gloc.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gname.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gnode.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gobj.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Groot.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gstab.o): relocation R_X86_64_32 against symbol `H5B_SNODE' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gtraverse.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HF.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFbtree2.o): relocation R_X86_64_32 against `.data' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFcache.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFdblock.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFdtable.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFhdr.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFhuge.o): relocation R_X86_64_32S against symbol `H5HF_HUGE_BT2_FILT_DIR' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFiblock.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFiter.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFman.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFsection.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFspace.o): relocation R_X86_64_32S against symbol `H5HF_FSPACE_SECT_CLS_SINGLE' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFtiny.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HL.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HLcache.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HLint.o): relocation R_X86_64_32 against `.data' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5I.o): relocation R_X86_64_32S against `.bss' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5L.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Lexternal.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5MF.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5MFaggr.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5MFsection.o): relocation R_X86_64_32 against symbol `H5_H5MF_free_section_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5MM.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5O.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Oainfo.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Oattr.o): relocation R_X86_64_32 against symbol `H5O_MSG_ATTR' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Oattribute.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Obtreek.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Ocache.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Ochunk.o): relocation R_X86_64_32 against symbol `H5_H5O_chunk_proxy_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Ocont.o): relocation R_X86_64_32 against symbol `H5_H5O_cont_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Ocopy.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Odrvinfo.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Odtype.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Oefl.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Ofill.o): relocation R_X86_64_32 against symbol `H5O_MSG_FILL' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Oginfo.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Olayout.o): relocation R_X86_64_32 against symbol `H5_H5O_layout_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Olinfo.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Olink.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Omessage.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Omtime.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Oname.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Opline.o): relocation R_X86_64_32 against symbol `H5O_MSG_PLINE' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Orefcount.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Osdspace.o): relocation R_X86_64_32 against symbol `H5O_MSG_SDSPACE' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Oshared.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Ostab.o): relocation R_X86_64_32 against `.data' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Oshmesg.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Ounknown.o): relocation R_X86_64_32 against symbol `H5_H5O_unknown_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5P.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pdapl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pdcpl.o): relocation R_X86_64_32S against `.text' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pdxpl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pfapl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pgcpl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pint.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Plapl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Plcpl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pocpl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pocpypl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pstrcpl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5PL.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5R.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5RC.o): relocation R_X86_64_32 against `.data' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5RS.o): relocation R_X86_64_32 against symbol `H5_str_buf_blk_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5S.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Sall.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Sdbg.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Shyper.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Snone.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Spoint.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Sselect.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5SL.o): relocation R_X86_64_32 against `.data' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5SM.o): relocation R_X86_64_32 against symbol `H5_H5SM_master_table_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5SMbtree2.o): relocation R_X86_64_32 against `.data' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5SMcache.o): relocation R_X86_64_32 against symbol `H5_H5SM_master_table_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5SMmessage.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5T.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tarray.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tbit.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tcommit.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tcompound.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tconv.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tdbg.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tdeprec.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tenum.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tfields.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tinit.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tnative.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Toh.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Torder.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tprecis.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tstrpad.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tvisit.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tvlen.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5V.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5WB.o): relocation R_X86_64_32 against `.data' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Z.o): relocation R_X86_64_32 against symbol `H5Z_DEFLATE' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Zdeflate.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Zfletcher32.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Znbit.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Zshuffle.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Zszip.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Zscaleoffset.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Ztrans.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5checksum.o): relocation R_X86_64_32S against `.bss' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5timer.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Abtree2.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Adense.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5B.o): relocation R_X86_64_32 against symbol `H5_H5B_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Bcache.o): relocation R_X86_64_32 against symbol `H5_H5B_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Bdbg.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5B2stat.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Dbtree.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Dchunk.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Dcompact.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Dcontig.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Defl.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Dfill.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Doh.o): relocation R_X86_64_32 against symbol `H5_H5D_copy_file_ud_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Ffake.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FS.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FScache.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5FSsection.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gcache.o): relocation R_X86_64_32 against symbol `H5_H5G_node_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gcompact.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Gdense.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Goh.o): relocation R_X86_64_32 against symbol `H5_H5G_copy_file_ud_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HFstat.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HG.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5HGcache.o): relocation R_X86_64_32 against symbol `H5_H5HG_heap_t_reg_free_list' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Oalloc.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Odbg.o): relocation R_X86_64_32S against symbol `H5O_msg_class_g' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pfcpl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Pfmpl.o): relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Tfixed.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Toffset.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libhdf5.a(H5Fcwfs.o): relocation R_X86_64_32S against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: /usr/lib64/libnetcdf.a(libnetcdf_la-stub.o): relocation R_X86_64_PC32 against symbol `NCDISPATCH_initialize' can not be used when making a shared object; recompile with -fPIC
+/bin/ld: final link failed: Bad value
+clang-3.8: error: linker command failed with exit code 1 (use -v to see invocation)
+[dan@ffb519ed6bb3 build]$ q^C
+[dan@ffb519ed6bb3 build]$ more ../compile_and_link_with_netcdf_calls.sh
+
+/opt/irods-externals/clang3.8-0/bin/clang++   -DBOOST_SYSTEM_NO_DEPRECATED -DENABLE_RE -DRODS_SERVER   -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -D_LARGE_FILES   -
+Dlinux_platform -Dmsiextract_netcdf_header_EXPORTS -I/opt/irods-externals/clang3.8-0/include/c++/v1   -I/usr/include/irods -I/opt/irods-externals/qpid-with-proton0.34-0/include   -I/opt/
+irods-externals/boost1.60.0-0/include -I/opt/irods-externals/jansson2.7-0/include   -I/opt/irods-externals/libarchive3.3.2-0/include  -O3 -DNDEBUG -fPIC   -nostdinc++ -std=c++14   -Wno-w
+rite-strings -std=gnu++14   -o CMakeFiles/msiextract_netcdf_header.dir/src/lib-microservice-extract_netcdf_header.cpp.o   -c /home/dan/extract_netcdf_header_msvc/src/lib-microservice-ext
+ract_netcdf_header.cpp -DTEST_SECTION=0
+
+/opt/irods-externals/clang3.8-0/bin/clang++  -fPIC -O3 -DNDEBUG  -stdlib=libc++ -shared   -o libmsiextract_netcdf_header.so CMakeFiles/msiextract_netcdf_header.dir/src/lib-microservice-e
+xtract_netcdf_header.cpp.o   -lc++abi /opt/irods-externals/boost1.60.0-0/lib/libboost_filesystem.so /opt/irods-externals/boost1.60.0-0/lib/libboost_system.so   /opt/irods-externals/libar
+chive3.3.2-0/lib/libarchive.so /usr/lib64/libcrypto.so   -Wl,-rpath,/opt/irods-externals/boost1.60.0-0/lib:/opt/irods-externals/libarchive3.3.2-0/lib:  /usr/lib64/lib{netcdf,hdf5}.a
+
+[dan@ffb519ed6bb3 build]$ ^C
+[dan@ffb519ed6bb3 build]$ ^C
+[dan@ffb519ed6bb3 build]$
+[dan@ffb519ed6bb3 build]$
+
