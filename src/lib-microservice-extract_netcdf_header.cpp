@@ -79,6 +79,57 @@ std::string Delim_append( std::string input , std::string extra )
     return input + extra;
 }
 
+static std::string delimited (std::string s, char d=';') 
+{
+    return s.empty() ? s : s+d; 
+}
+
+int do_attributes (std::string & base_string,
+                   string_to_string_map & kvp,
+                   int ncid,
+                   int varid = NC_GLOBAL, // default to "global" or >= 0 for an actual variable
+                   int *nattrs = 0)       // NULL pointer means unspecified
+{
+    using boost::format;
+    char name_V[NC_MAX_NAME+1];
+    int type_V,ndims_V,dimids_V[NC_MAX_DIMS],nattrs_V;
+    if (nattrs ==  0) {
+        int status = nc_inq_natts( ncid, (nattrs = &nattrs_V));
+        if (status != NC_NOERR) return status;
+    }
+
+    for (int attI = 0; attI < *nattrs; attI++) {
+        char name_A[NC_MAX_NAME+1];
+        //int status = nc_inq_att( ncid, varid, name_A, &xtype, &lenp );
+        int status =  nc_inq_attname(ncid, varid, attI, name_A);
+        //int status = nc_inq_atttype( ncid,  attI, name_A );
+        if (status == NC_NOERR) { int id  = -1;
+            std::string  tmpStr, strKey = (format("ATTR=%1%") % attI).str();
+            nc_type  xtype_A;
+            size_t   plen_A; 
+
+            kvp[ tmpStr = strKey + ";name" ] = name_A;
+            PRINTF ("\t%s => %s\n" ,tmpStr.c_str(), name_A );
+
+            if (NC_NOERR == nc_inq_atttype(ncid,varid,name_A,&xtype_A))  {
+                kvp[ tmpStr = strKey + ";type" ] = nc_type_itos [xtype_A];
+                PRINTF("\t%s => %s\n",tmpStr.c_str(),nc_type_itos[xtype_A].c_str());
+            }
+
+            if (NC_NOERR == nc_inq_attlen(ncid,varid,name_A,&plen_A)) {
+                kvp[ tmpStr = strKey + ";len" ] = Stringize(plen_A);
+                PRINTF("\t%s => %lu\n",tmpStr.c_str(),(unsigned long)plen_A);
+            }
+        }
+
+//   int nc_inq_attlen  (int ncid, int varid, const char *name, size_t *lenp);
+//   int nc_inq_attid   (int ncid, int varid, const char *name, int *attnump);
+
+    }
+exit(123);
+    return 0;
+}
+
 int add_hierarchy_for_ncid
     (
         int ncid,
@@ -90,7 +141,7 @@ int add_hierarchy_for_ncid
     using std::vector;
     using boost::format;
 
-    auto delimited = [](std::string s, char d=';') { return s.empty() ? s : s+d; };
+    if (NC_NOERR != do_attributes ( base_string,kvp,ncid )) { return 1; }// top level attributes for file or group
 
     int ndims,nvars,ngatts,unlimdimid;
     int parseStatus = nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid);
@@ -106,25 +157,17 @@ int add_hierarchy_for_ncid
 
     vector<string> var_names ;
 
-    for (int attI = 0; attI < ngatts; attI ++) {
-//   int nc_inq_att    (int ncid, int varid, const char *name,
-//                      nc_type *xtypep, size_t *lenp);
-//   int nc_inq_atttype(int ncid, int varid, const char *name,
-//                      nc_type *xtypep);
-//   int nc_inq_attlen  (int ncid, int varid, const char *name, size_t *lenp);
-//   int nc_inq_attname(int ncid, int varid, int attnum, char *name);
-//   int nc_inq_attid   (int ncid, int varid, const char *name, int *attnump);
-    }
+    /* do attributes */
+
     for (int varI = 0; varI < nvars; varI++) 
     {
         string VAR_n_label = delimited( base_string ) + (format("VAR=%1%") % varI).str();
 
         vector<int> var_dimlengths ;
 
-        char name [NC_MAX_NAME]  = "";
+        char name [NC_MAX_NAME+1]  = "";
 
         int var_type,var_ndims,var_dimids[NC_MAX_DIMS],var_natts;
-
         int status = nc_inq_var (ncid, varI, name, &var_type, &var_ndims, var_dimids, &var_natts);
 
         if (status != NC_NOERR) { FPRINTF(stderr,"Bad get on variable %d\n",varI); continue; }
@@ -136,7 +179,7 @@ int add_hierarchy_for_ncid
         for (int dimN = 0; dimN < var_ndims; dimN++)
         {
             std::size_t lenp;
-            char dim_name [NC_MAX_NAME] = "*";
+            char dim_name [NC_MAX_NAME+1] = "*";
             int inq_dim_status = nc_inq_dim (ncid, var_dimids[dimN], dim_name, &lenp); 
             if (inq_dim_status == NC_NOERR) {
                 PRINTF("\tdimN %d (id %d) name = '%s' length = %u\n",dimN,var_dimids[dimN],dim_name,unsigned(lenp));
@@ -179,7 +222,7 @@ int open_netcdf_and_get_metadata ( const char *filename, string_to_string_map & 
         int group_inq_status = nc_inq_grps ( file_ncid, &n_subgrps, group_ncids );
 
         if (group_inq_status == NC_NOERR) { 
-            char grpname [NC_MAX_NAME]="";
+            char grpname [NC_MAX_NAME+1]="";
             for (int i=0;i<n_subgrps;i++) 
             {
                 int stat = nc_inq_grpname (group_ncids[i], grpname) ;
