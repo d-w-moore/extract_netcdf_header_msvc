@@ -88,11 +88,13 @@ int add_hierarchy_for_ncid
     using std::vector;
     using boost::format;
 
+    auto delimited = [](std::string s, char d=';') { return s.empty() ? s : s+d; };
+
     int ndims,nvars,ngatts,unlimdimid;
     int parseStatus = nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid);
     if (parseStatus !=  NC_NOERR) { return parseStatus; }
 
-    string k = Delim_append( base_string , "unlimdimid" );
+    string k = delimited( base_string )+ "unlimdimid";
 
     PRINTF("_unlimdimid -> %d\n",unlimdimid);
 
@@ -113,7 +115,7 @@ int add_hierarchy_for_ncid
     }
     for (int varI = 0; varI < nvars; varI++) 
     {
-        string VAR_n_label = Delim_append( base_string, (format("VAR=%1%")%varI).str() );
+        string VAR_n_label = delimited( base_string ) + (format("VAR=%1%") % varI).str();
 
         vector<int> var_dimlengths ;
 
@@ -140,11 +142,11 @@ int add_hierarchy_for_ncid
             } 
             else { FPRINTF(stderr,"error retrieving dimension %d\n", dimN); }
         }
-        if (var_dimlengths.size() > 0) kvp[ Delim_append(VAR_n_label,"_dimlengths") ] = Join( var_dimlengths );
-        kvp[ Delim_append(VAR_n_label,"name") ] = name;
-        kvp[ Delim_append(VAR_n_label,"type") ] = nc_type_itos [ var_type ];
+        if (var_dimlengths.size() > 0) kvp[ delimited(VAR_n_label) + "_dimlengths" ] = Join( var_dimlengths );
+        kvp[ delimited(VAR_n_label) + "name" ] = name;
+        kvp[ delimited(VAR_n_label) + "type" ] = nc_type_itos [ var_type ];
     }
-    kvp[ Delim_append(base_string,"_varnames") ] = Join( var_names );
+    kvp[ delimited( base_string ) + "_varnames" ] = Join( var_names );
 
     return 0;
 }
