@@ -4,14 +4,14 @@ This is a simple microservice , callable from any iRODS rule base, which can rea
 from a NetCDF-formatted file in the filesystem. 
 
 The hierarchical structure of the NetCDF formatted
-data in the file (variable types, dimensions, etc.) is gathered into a KeyValuePair object, which
-may then be associated to the file's data object once it is registered into iRODS.
+data in the file (variable types, dimensions, etc.) is gathered into a KeyValuePair object as a list
+of key-value pairs, which can then be associated to the file's data object once it is registered into iRODS.
 
-This use-case is codified in the demonstration script `src/reg_with_metadata.r`, which may be run 
-by following the instructions below
+The above use-case is codified in the demonstration script `src/reg_with_metadata.r`.
 
 
-## Running the microservice demo script
+
+## Running the microservice demonstration script
 ----
 
 ### System requirements 
