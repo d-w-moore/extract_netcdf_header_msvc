@@ -52,18 +52,20 @@ struct bad_input_file
   std::string message ;
 };
 
-typedef std::map<std::string,std::string> string_to_string_map;
-typedef std::map<std::string , int> NCTYPES_S_I_MAP_t;
-typedef std::map<int , std::string> NCTYPES_I_S_MAP_t;
+typedef std::map< std::string,
+                  std::string >  string_to_string_map;
 
-static NCTYPES_S_I_MAP_t  nc_type_stoi { 
+typedef std::map<std::string , int> Str_Int_MAP_t;
+typedef std::map<int , std::string> Int_Str_MAP_t;
+
+static Str_Int_MAP_t  nc_type_stoi { 
 
     s_i_pair(NC_NAT), s_i_pair(NC_BYTE), s_i_pair(NC_CHAR), s_i_pair(NC_SHORT),
     s_i_pair(NC_INT), s_i_pair(NC_FLOAT), s_i_pair(NC_DOUBLE), s_i_pair(NC_UBYTE),
     s_i_pair(NC_USHORT), s_i_pair(NC_UINT), s_i_pair(NC_INT64), s_i_pair(NC_UINT64), s_i_pair(NC_STRING)
 };
 
-static NCTYPES_I_S_MAP_t  nc_type_itos {
+static Int_Str_MAP_t  nc_type_itos {
 
     i_s_pair(NC_NAT), i_s_pair(NC_BYTE), i_s_pair(NC_CHAR), i_s_pair(NC_SHORT), 
     i_s_pair(NC_INT), i_s_pair(NC_FLOAT), i_s_pair(NC_DOUBLE), i_s_pair(NC_UBYTE),
@@ -206,7 +208,6 @@ int main ( int argc , char* argv [] )
         status = open_netcdf_and_get_metadata (argv[1] , key_value_pairs); 
     }
     else {
-
         status = 1;
     }
     cout << "************** KEY_VALUE_PAIRS **************\n";
