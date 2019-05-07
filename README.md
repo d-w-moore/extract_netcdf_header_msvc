@@ -1,4 +1,15 @@
-# NetCDF header extraction microservice for iRODS
+# NetCDF header extraction for iRODS
+
+This is a simple microservice , callable from any iRODS rule base, which can read the header data 
+from a NetCDF-formatted file in the filesystem. 
+
+The hierarchical structure of the NetCDF formatted
+data in the file (variable types, dimensions, etc.) is gathered into a KeyValuePair object, which
+may then be associated to the file's data object once it is registered into iRODS.
+
+This use-case is codified in the demonstration script `src/reg_with_metadata.r`, which may be run 
+by following the instructions below
+
 
 ## Running the microservice demo script
 ----
