@@ -35,11 +35,15 @@
 #endif
 
 #if irods_build
-#  define printf
-#  define fprintf
+namespace {
+  int  PRINTF(...)  { return 0; }
+  int  FPRINTF(...) { return 0; }
+  int  FFLUSH(...)  { return 0; }
+}
 #else
-#  define printf std::printf
-#  define fprintf std::fprintf
+#  define PRINTF std::printf
+#  define FPRINTF std::fprintf
+#  define FFLUSH std::fflush
 #endif
 
 struct bad_input_file 
@@ -67,35 +71,90 @@ static NCTYPES_I_S_MAP_t  nc_type_itos {
 };
 
 
-std::string
-add_hierarchy_for_ncid
+std::string Delim_append( std::string input , std::string extra )
+{
+    if (input.size()) input += ";";
+    return input + extra;
+}
+
+int add_hierarchy_for_ncid
     (
         int ncid,
         std::string         base_string,
-        string_to_string_map & kvpCache 
+        string_to_string_map & kvp
     )
 {
-    std::string delimiter = "" ;
-    auto delimited_append = [&](std::string new_stuff) -> void { 
-        if (0 < base_string.size()) delimiter = ";";
-        base_string += (delimiter + new_stuff);
-    };
-    delimited_append("a");
-    delimited_append("b");
-    return base_string;
+    using std::string;
+    using std::vector;
+    using boost::format;
+
+    int ndims,nvars,ngatts,unlimdimid;
+    int parseStatus = nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid);
+    if (parseStatus !=  NC_NOERR) { return parseStatus; }
+
+    string k = Delim_append( base_string , "unlimdimid" );
+
+    PRINTF("_unlimdimid -> %d\n",unlimdimid);
+
+    kvp [ k ] = Stringize(unlimdimid);
+
+    // - get top-level variables for file/group
+
+    vector<string> var_names ;
+
+    for (int attI = 0; attI < ngatts; attI ++) {
+//   int nc_inq_att    (int ncid, int varid, const char *name,
+//                      nc_type *xtypep, size_t *lenp);
+//   int nc_inq_atttype(int ncid, int varid, const char *name,
+//                      nc_type *xtypep);
+//   int nc_inq_attlen  (int ncid, int varid, const char *name, size_t *lenp);
+//   int nc_inq_attname(int ncid, int varid, int attnum, char *name);
+//   int nc_inq_attid   (int ncid, int varid, const char *name, int *attnump);
+    }
+    for (int varI = 0; varI < nvars; varI++) 
+    {
+        string VAR_n_label = Delim_append( base_string, (format("VAR=%1%")%varI).str() );
+
+        vector<int> var_dimlengths ;
+
+        char name [NC_MAX_NAME]  = "";
+
+        int var_type,var_ndims,var_dimids[NC_MAX_DIMS],var_natts;
+
+        int status = nc_inq_var (ncid, varI, name, &var_type, &var_ndims, var_dimids, &var_natts);
+
+        if (status != NC_NOERR) { FPRINTF(stderr,"Bad get on variable %d\n",varI); continue; }
+
+        PRINTF ("var name = %s\n", name);
+
+        var_names.push_back(name);
+
+        for (int dimN = 0; dimN < var_ndims; dimN++)
+        {
+            std::size_t lenp;
+            char dim_name [NC_MAX_NAME] = "*";
+            int inq_dim_status = nc_inq_dim (ncid, var_dimids[dimN], dim_name, &lenp); 
+            if (inq_dim_status == NC_NOERR) {
+                PRINTF("\tdimN %d (id %d) name = '%s' length = %u\n",dimN,var_dimids[dimN],dim_name,unsigned(lenp));
+                var_dimlengths . push_back(lenp);
+            } 
+            else { FPRINTF(stderr,"error retrieving dimension %d\n", dimN); }
+        }
+        if (var_dimlengths.size() > 0) kvp[ Delim_append(VAR_n_label,"_dimlengths") ] = Join( var_dimlengths );
+        kvp[ Delim_append(VAR_n_label,"name") ] = name;
+        kvp[ Delim_append(VAR_n_label,"type") ] = nc_type_itos [ var_type ];
+    }
+    kvp[ Delim_append(base_string,"_varnames") ] = Join( var_names );
+
+    return 0;
 }
 
-
-int
-open_netcdf_and_get_metadata (
-  const char *filename,
-  string_to_string_map & kvp_store)
+int open_netcdf_and_get_metadata ( const char *filename, string_to_string_map & kvp_store)
 {
-    int file_ncid, parseStatus = -1-NC_NOERR;
-    int openStatus = nc_open( filename, NC_NOWRITE, & file_ncid );
+    int file_ncid, openStatus, parseStatus = -1-NC_NOERR;
     int ndims,nvars,ngatts,unlimdimid;
-
-    if (openStatus != NC_NOERR
+    int status = 0;
+    if ((openStatus = nc_open( filename, NC_NOWRITE, & file_ncid )) != NC_NOERR
         || (parseStatus = nc_inq(file_ncid, &ndims, &nvars, &ngatts, &unlimdimid)) != NC_NOERR)
     {
         throw bad_input_file {
@@ -106,53 +165,39 @@ open_netcdf_and_get_metadata (
         };
     }
 
-    // printf("unlimdimid -> %d\n",unlimdimid);
+    status = add_hierarchy_for_ncid( file_ncid , "", kvp_store );
 
     int n_subgrps;
-    int status = nc_inq_grps ( file_ncid, &n_subgrps, nullptr );    // find how many subgroups
-
-    std::string junk = add_hierarchy_for_ncid( file_ncid , "", kvp_store );
-    const char * junkc = junk.c_str();
+    status = nc_inq_grps ( file_ncid, &n_subgrps, nullptr );    // find how many subgroups
         
-    if (n_subgrps > 0) { 
-        int *grpids = new int [n_subgrps];
-        int group_inq_status = nc_inq_grps ( file_ncid, &n_subgrps, grpids );
-/*
+    if (n_subgrps > 0) {
+        int *group_ncids = new int [n_subgrps];
+        int group_inq_status = nc_inq_grps ( file_ncid, &n_subgrps, group_ncids );
+
         if (group_inq_status == NC_NOERR) { 
             char grpname [NC_MAX_NAME]="";
-            for (int i=0;i<n_subgrps;i++) { //if (NC_NOERR == 
-                int stat = nc_inq_grpname (grpids[i], grpname) ;
-                printf("\tncid #%d = %d group = '%s'\n",i,grpids[i],grpname);
+            for (int i=0;i<n_subgrps;i++) 
+            {
+                int stat = nc_inq_grpname (group_ncids[i], grpname) ;
+                PRINTF("\tncid #%d = %d group = '%s'\n",i,group_ncids[i],grpname);
+                const std::string root_group { (boost::format("GROUP=%1%") % i).str() };
+
+                kvp_store [ root_group + ";ncid" ] = Stringize( group_ncids [i] );
+                kvp_store [ root_group + ";name" ] = Stringize( grpname );
+
+                add_hierarchy_for_ncid ( group_ncids[i], root_group, kvp_store );
             }
         }
-*/
-        delete [] grpids;
+        delete [] group_ncids;
     }
 
-/* *** get top-level variables for file/group
- *
-    for (int rh_id = 0; rh_id < nvars; rh_id++) 
-    {
-        char name [NC_MAX_NAME]  = "";
-        int rh_type,rh_ndims,rh_dimids[NC_MAX_DIMS],rh_natts;
-        int status = nc_inq_var (ncid, rh_id, name, &rh_type, &rh_ndims, rh_dimids, &rh_natts);
-        for (int dimId = 0; dimId < rh_ndims; dimId++)
-        {
-            std::size_t lenp;
-            char dim_name [NC_MAX_NAME] = "*";
-            int inq_dim_status = nc_inq_dim (ncid, dimId, dim_name, &lenp); 
-            if (inq_dim_status == NC_NOERR) { 
-                // -- DWM dim ids --  printf("\t - (dimid = %d) %s [%u]\n",rh_dimids[dimId],dim_name,unsigned(lenp));
-            }
-        }
-    }
- * ***/
     return 0;
 }
 
 #if !(irods_build)
 int main ( int argc , char* argv [] ) 
 {
+    using namespace std;
     string_to_string_map  key_value_pairs;
     int status = 0;
     if (argc > 1) {
@@ -161,6 +206,11 @@ int main ( int argc , char* argv [] )
     else {
 
         status = 1;
+    }
+    cout << "************** KEY_VALUE_PAIRS **************\n";
+    for (auto const &pr : key_value_pairs) {
+		cout << pr.first << "\t"
+		     << pr.second << endl;
     }
     return status;
 }
@@ -218,28 +268,18 @@ int msiextract_netcdf_header(
         }
     }
 
-/*  std::size_t nKeys = keys.size();
-    if ( nKeys != values.size() ) {
-        const char * fn = netCDF_FileName;
-        rodsLog( LOG_ERROR, "Something went wrong in header extraction in '%s'\n" , fn ? fn : "");
-        return SYS_INTERNAL_ERR;
-    }
- */
-
     rei->status = 0;
 
-    for (auto const & kvp : key_value_pairs) {
-
-        rei->status = addKeyVal( ( keyValPair_t* )inKeyValPair->inOutStruct, 
-                                   kvp.first.c_str(),
-                                   kvp.second.c_str() );
-
+    for (auto const & kvp : key_value_pairs) 
+    {
+        rei->status = addKeyVal( (keyValPair_t*) inKeyValPair->inOutStruct, 
+                                 kvp.first.c_str(),
+                                 kvp.second.c_str() );
         if (rei->status != 0) { 
             rodsLog( LOG_ERROR, "Bad value from  addKeyVal \n"  );
             return (rei->status);
         }
     }
-
     return 0;
 }
 

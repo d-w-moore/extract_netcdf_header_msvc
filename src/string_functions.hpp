@@ -25,7 +25,7 @@ template <>
   Stringize( std::string inp ) { return  std::string("\042")  + inp  + std::string("\042"); }
 
 template <typename T>
-std::string Join(const std::vector<T>& v, char c) 
+std::string Join(const std::vector<T>& v, char c=',') 
 {
    std::string s="[";
    for (auto p = v.begin(); p != v.end(); ++p)
@@ -46,6 +46,16 @@ void Fill_vector (std::vector<T> & v_dest, const T*  ptr , int n)
     while (n-- > 0) {
         v_dest.push_back(*ptr++);
     }
+}
+
+template <typename T>
+std::vector<T> Filled_vector (const T*  ptr , int n)
+{
+    std::vector<T> v;
+    while (n-- > 0) {
+        v.push_back(*ptr++);
+    }
+    return v;
 }
 
 #endif // STRING_FUNCTIONS_HPP
