@@ -28,6 +28,6 @@ The following support libraries should be installed before building and installi
      ```
      myuser@host:~$ su - irods
      irods@host:~$ cd /tmp
-     irods@host:/tmp$ wget https://www.unidata.ucar.edu/software/netcdf/examples/test_hgroups.nc`
+     irods@host:/tmp$ wget https://www.unidata.ucar.edu/software/netcdf/examples/test_hgroups.nc
      irods@host:/tmp$ irule -F reg_with_metadata.r "*phyFile='$(pwd)/test_hgroups.nc'"
      ```
