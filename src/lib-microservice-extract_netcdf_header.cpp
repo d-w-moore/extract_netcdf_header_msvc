@@ -72,7 +72,6 @@ static Int_Str_MAP_t  nc_type_itos {
     i_s_pair(NC_USHORT), i_s_pair(NC_UINT), i_s_pair(NC_INT64), i_s_pair(NC_UINT64), i_s_pair(NC_STRING)
 };
 
-
 std::string Delim_append( std::string input , std::string extra )
 {
     if (input.size()) input += ";";
@@ -84,7 +83,7 @@ static std::string delimited (std::string s, char d=';')
     return s.empty() ? s : s+d; 
 }
 
-int do_attributes (std::string & base_string,
+int do_attributes (std::string base_string,
                    string_to_string_map & kvp,
                    int ncid,
                    int varid = NC_GLOBAL, // default to "global" or >= 0 for an actual variable
@@ -97,36 +96,28 @@ int do_attributes (std::string & base_string,
         int status = nc_inq_natts( ncid, (nattrs = &nattrs_V));
         if (status != NC_NOERR) return status;
     }
-
     for (int attI = 0; attI < *nattrs; attI++) {
         char name_A[NC_MAX_NAME+1];
-        //int status = nc_inq_att( ncid, varid, name_A, &xtype, &lenp );
         int status =  nc_inq_attname(ncid, varid, attI, name_A);
-        //int status = nc_inq_atttype( ncid,  attI, name_A );
         if (status == NC_NOERR) { int id  = -1;
-            std::string  tmpStr, strKey = (format("ATTR=%1%") % attI).str();
+            std::string  tmpStr, strKey = delimited(base_string) + (format("ATTR=%1%") % attI).str();
             nc_type  xtype_A;
             size_t   plen_A; 
 
             kvp[ tmpStr = strKey + ";name" ] = name_A;
-            PRINTF ("\t%s => %s\n" ,tmpStr.c_str(), name_A );
+            PRINTF ("%s\t%s\n" ,tmpStr.c_str(), name_A );
 
             if (NC_NOERR == nc_inq_atttype(ncid,varid,name_A,&xtype_A))  {
                 kvp[ tmpStr = strKey + ";type" ] = nc_type_itos [xtype_A];
-                PRINTF("\t%s => %s\n",tmpStr.c_str(),nc_type_itos[xtype_A].c_str());
+                PRINTF("%s\t%s\n",tmpStr.c_str(),nc_type_itos[xtype_A].c_str());
             }
 
             if (NC_NOERR == nc_inq_attlen(ncid,varid,name_A,&plen_A)) {
                 kvp[ tmpStr = strKey + ";len" ] = Stringize(plen_A);
-                PRINTF("\t%s => %lu\n",tmpStr.c_str(),(unsigned long)plen_A);
+                PRINTF("%s\t%lu\n",tmpStr.c_str(),(unsigned long)plen_A);
             }
         }
-
-//   int nc_inq_attlen  (int ncid, int varid, const char *name, size_t *lenp);
-//   int nc_inq_attid   (int ncid, int varid, const char *name, int *attnump);
-
     }
-exit(123);
     return 0;
 }
 
@@ -149,7 +140,7 @@ int add_hierarchy_for_ncid
 
     string k = delimited( base_string )+ "unlimdimid";
 
-    PRINTF("_unlimdimid -> %d\n",unlimdimid);
+    FPRINTF(stderr,"_unlimdimid -> %d\n",unlimdimid);
 
     kvp [ k ] = Stringize(unlimdimid);
 
@@ -169,6 +160,11 @@ int add_hierarchy_for_ncid
 
         int var_type,var_ndims,var_dimids[NC_MAX_DIMS],var_natts;
         int status = nc_inq_var (ncid, varI, name, &var_type, &var_ndims, var_dimids, &var_natts);
+
+        if (NC_NOERR != do_attributes (VAR_n_label , kvp , ncid , varI , &var_natts)) { 
+            FPRINTF(stderr , "could not get attributes for variable");
+            return 2;
+        }
 
         if (status != NC_NOERR) { FPRINTF(stderr,"Bad get on variable %d\n",varI); continue; }
 
@@ -253,10 +249,9 @@ int main ( int argc , char* argv [] )
     else {
         status = 1;
     }
-    cout << "************** KEY_VALUE_PAIRS **************\n";
+    cerr << "\n\n\t************** KEY_VALUE_PAIRS **************\n\n";
     for (auto const &pr : key_value_pairs) {
-		cout << pr.first << "\t"
-		     << pr.second << endl;
+		cerr << "\t" << pr.first << "\t\t" << pr.second << endl;
     }
     return status;
 }
