@@ -18,7 +18,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
-//#include <exception>
 #include <cstring>
 #include <regex.h>
  
@@ -26,9 +25,14 @@
 
 #include "boost/format.hpp"
 #include "string_functions.hpp"
+#include "get_attribute_values.hpp"
 
 #define s_i_pair(a) { #a, a }
 #define i_s_pair(a) { a, #a }
+
+#ifndef GET_ATTR_VALUES
+#define GET_ATTR_VALUES 0
+#endif
 
 #ifndef irods_build
 #define irods_build 1
@@ -72,12 +76,6 @@ static Int_Str_MAP_t  nc_type_itos {
     i_s_pair(NC_USHORT), i_s_pair(NC_UINT), i_s_pair(NC_INT64), i_s_pair(NC_UINT64), i_s_pair(NC_STRING)
 };
 
-std::string Delim_append( std::string input , std::string extra )
-{
-    if (input.size()) input += ";";
-    return input + extra;
-}
-
 static std::string delimited (std::string s, char d=';') 
 {
     return s.empty() ? s : s+d; 
@@ -92,10 +90,12 @@ int do_attributes (std::string base_string,
     using boost::format;
     char name_V[NC_MAX_NAME+1];
     int type_V,ndims_V,dimids_V[NC_MAX_DIMS],nattrs_V;
+
     if (nattrs ==  0) {
         int status = nc_inq_natts( ncid, (nattrs = &nattrs_V));
         if (status != NC_NOERR) return status;
     }
+
     for (int attI = 0; attI < *nattrs; attI++) {
         char name_A[NC_MAX_NAME+1];
         int status =  nc_inq_attname(ncid, varid, attI, name_A);
@@ -118,6 +118,24 @@ int do_attributes (std::string base_string,
             }
         }
     }
+
+#if GET_ATTR_VALUES
+    for (int attI = 0; attI < *nattrs; attI++) {
+        char name_A[NC_MAX_NAME+1];
+        int status =  nc_inq_attname(ncid, varid, attI, name_A);
+        if (status != NC_NOERR) {
+          break;
+        }
+        nc_type  xtype_A;
+        if (NC_NOERR == nc_inq_atttype(ncid,varid,name_A,&xtype_A))  {
+            if (xtype_A == NC_STRING) {
+                FPRINTF(stderr,"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+            }
+        }
+        
+    }
+#endif 
+
     return 0;
 }
 
@@ -132,23 +150,42 @@ int add_hierarchy_for_ncid
     using std::vector;
     using boost::format;
 
-    if (NC_NOERR != do_attributes ( base_string,kvp,ncid )) { return 1; }// top level attributes for file or group
-
     int ndims,nvars,ngatts,unlimdimid;
     int parseStatus = nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid);
     if (parseStatus !=  NC_NOERR) { return parseStatus; }
 
-    string k = delimited( base_string )+ "unlimdimid";
-
-    FPRINTF(stderr,"_unlimdimid -> %d\n",unlimdimid);
-
-    kvp [ k ] = Stringize(unlimdimid);
-
-    // - get top-level variables for file/group
-
-    vector<string> var_names ;
+    // - get top-level attributes, dimensions & variables for a group / file NCID
 
     /* do attributes */
+
+    if (NC_NOERR != do_attributes ( base_string,kvp,ncid )) { return 1; }
+
+    /* do dimensions */
+
+    string k = delimited( base_string )+ "unlimdimid";
+    PRINTF("_unlimdimid -> %d\n",unlimdimid);
+    kvp [ k ] = Stringize(unlimdimid);
+
+    int group_ndims;
+    int group_dimids[NC_MAX_DIMS];
+    if (NC_NOERR == nc_inq_dimids(ncid, &group_ndims, group_dimids, 0/* include_parents*/)) 
+    {
+        for (int i=0;i<group_ndims;i++) {
+            int dimId = group_dimids[i];
+            size_t lenp;
+            char dim_name[NC_MAX_NAME+1];
+            int status = nc_inq_dim (ncid, dimId, dim_name, &lenp); 
+            PRINTF("INQ_DIM @ ncid=%d dimI= %d => dim_name = '%s' lenp='%d'\n",ncid,dimId,dim_name,(int)lenp);
+            if (status==NC_NOERR) {
+                string dimLabel = delimited(base_string) + (format("DIM_%1%") % i).str();
+                kvp[dimLabel + ";name" ] = dim_name;
+                kvp[dimLabel + ";len" ] = Stringize(lenp);
+                kvp[dimLabel + ";id" ] = Stringize(dimId);
+            }
+        }
+    }
+
+    vector<string> var_names ;
 
     for (int varI = 0; varI < nvars; varI++) 
     {
@@ -158,15 +195,15 @@ int add_hierarchy_for_ncid
 
         char name [NC_MAX_NAME+1]  = "";
 
-        int var_type,var_ndims,var_dimids[NC_MAX_DIMS],var_natts;
+        int var_type,var_ndims,var_dimids[NC_MAX_VAR_DIMS],var_natts;
         int status = nc_inq_var (ncid, varI, name, &var_type, &var_ndims, var_dimids, &var_natts);
 
         if (NC_NOERR != do_attributes (VAR_n_label , kvp , ncid , varI , &var_natts)) { 
-            FPRINTF(stderr , "could not get attributes for variable");
+            FPRINTF(stderr , "Error: could not get attributes for variable");
             return 2;
         }
 
-        if (status != NC_NOERR) { FPRINTF(stderr,"Bad get on variable %d\n",varI); continue; }
+        if (status != NC_NOERR) { FPRINTF(stderr,"Error: bad get on variable %d\n",varI); continue; }
 
         PRINTF ("var name = %s\n", name);
 
@@ -180,8 +217,12 @@ int add_hierarchy_for_ncid
             if (inq_dim_status == NC_NOERR) {
                 PRINTF("\tdimN %d (id %d) name = '%s' length = %u\n",dimN,var_dimids[dimN],dim_name,unsigned(lenp));
                 var_dimlengths . push_back(lenp);
+                string vardim_N_label = delimited(VAR_n_label) + (format("DIM_%1%") % dimN).str();
+                kvp[ vardim_N_label + ";id" ] = Stringize(var_dimids[dimN]);
+                kvp[ vardim_N_label + ";name" ] = dim_name;
+                kvp[ vardim_N_label + ";len" ] = Stringize(lenp);
             } 
-            else { FPRINTF(stderr,"error retrieving dimension %d\n", dimN); }
+            else { FPRINTF(stderr,"Error: could not retrieve dimension %d\n", dimN); }
         }
         if (var_dimlengths.size() > 0) kvp[ delimited(VAR_n_label) + "_dimlengths" ] = Join( var_dimlengths );
         kvp[ delimited(VAR_n_label) + "name" ] = name;

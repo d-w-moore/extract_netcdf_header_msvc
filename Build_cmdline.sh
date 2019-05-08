@@ -18,7 +18,7 @@ else
     -I/opt/irods-externals/libarchive3.3.2-0/include  -O0 -DNDEBUG -nostdinc++ \
     -std=c++14 -Wno-write-strings -std=gnu++14 \
     -o lib-microservice-extract_netcdf_header.cpp.o \
-    -c ../src/lib-microservice-extract_netcdf_header.cpp -g
+    -c ../src/lib-microservice-extract_netcdf_header.cpp -g -DGET_ATTR_VALUES=1
 
 # -fPIC
   } && \
