@@ -130,6 +130,13 @@ int do_attributes (std::string base_string,
         if (NC_NOERR == nc_inq_atttype(ncid,varid,name_A,&xtype_A))  {
             if (xtype_A == NC_STRING) {
                 FPRINTF(stderr,"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+                attribute_params<char*> sgParams (ncid,varid,name_A);
+                if (0 == sgParams.get_attribute_values()) {
+                    for (int i = 0; i < sgParams.dimension; i++) {
+                        FPRINTF(stderr, "%s|", sgParams.p[i]);
+                    }
+                    FPRINTF(stderr,"\n");
+                }
             }
         }
         

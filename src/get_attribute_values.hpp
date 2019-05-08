@@ -32,7 +32,7 @@ struct attribute_params {
     free(p);
   }
 private:
-  void allocate_pointer_array() { *p = calloc(dimension, sizeof(T)); }
+  void allocate_pointer_array() { p = static_cast<T*>(calloc(dimension, sizeof(T))); }
 
 };
 
