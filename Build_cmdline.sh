@@ -1,3 +1,5 @@
+#!/bin/sh
+
 if [ "$(dirname $0)" != ".." ]
 then
     echo >&2 "Please execute $0 from a build subdirectory" ; exit 1
