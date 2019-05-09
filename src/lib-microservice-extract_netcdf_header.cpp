@@ -127,16 +127,28 @@ int do_attributes (std::string base_string,
           break;
         }
         nc_type  xtype_A;
+        char buf [1024];
+        int offs = 0 ;
         if (NC_NOERR == nc_inq_atttype(ncid,varid,name_A,&xtype_A))  {
-            if (xtype_A == NC_STRING) {
-                FPRINTF(stderr,"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+            if (xtype_A == NC_INT ) {
+                attribute_params<int> sgParams (ncid,varid,name_A);
+                sgParams.dump(buf,1024);
+            }
+            else if (xtype_A == NC_CHAR) {
+                attribute_params<char> sgParams (ncid,varid,name_A);
+                sgParams.dump(buf,1024);
+            }
+            else if (xtype_A == NC_STRING) {
                 attribute_params<char*> sgParams (ncid,varid,name_A);
+                sgParams.dump(buf,1024);
+/*
                 if (0 == sgParams.get_attribute_values()) {
                     for (int i = 0; i < sgParams.dimension; i++) {
                         FPRINTF(stderr, "%s|", sgParams.p[i]);
                     }
                     FPRINTF(stderr,"\n");
                 }
+*/
             }
         }
         
