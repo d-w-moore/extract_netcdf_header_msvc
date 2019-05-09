@@ -120,8 +120,10 @@ int do_attributes (std::string base_string,
     }
 
 #if GET_ATTR_VALUES
+
     for (int attI = 0; attI < *nattrs; attI++) {
         char name_A[NC_MAX_NAME+1];
+        std::string  tmpStr, strKey = delimited(base_string) + (format("ATTR=%1%") % attI).str();
         int status =  nc_inq_attname(ncid, varid, attI, name_A);
         if (status != NC_NOERR) {
           break;
@@ -130,31 +132,38 @@ int do_attributes (std::string base_string,
         char buf [1024];
         int offs = 0 ;
         if (NC_NOERR == nc_inq_atttype(ncid,varid,name_A,&xtype_A))  {
-            if (xtype_A == NC_INT ) {
+            if (xtype_A == NC_FLOAT ) {
+                attribute_params<float> sgParams (ncid,varid,name_A);
+                if (NC_NOERR==sgParams.get_attribute_values()) {
+                    sgParams.dump(buf,1024);
+                    kvp[ strKey + ";_value" ] = buf;
+                }
+            }
+            else if (xtype_A == NC_INT ) {
                 attribute_params<int> sgParams (ncid,varid,name_A);
-                sgParams.dump(buf,1024);
+                if (NC_NOERR==sgParams.get_attribute_values()) {
+                    sgParams.dump(buf,1024);
+                    kvp[ strKey + ";_value" ] = buf;
+                }
             }
             else if (xtype_A == NC_CHAR) {
                 attribute_params<char> sgParams (ncid,varid,name_A);
-                sgParams.dump(buf,1024);
+                if (NC_NOERR==sgParams.get_attribute_values()) {
+                    sgParams.dump(buf,1024);
+                    kvp[ strKey + ";_value" ] = buf;
+                }
             }
             else if (xtype_A == NC_STRING) {
                 attribute_params<char*> sgParams (ncid,varid,name_A);
-                sgParams.dump(buf,1024);
-/*
-                if (0 == sgParams.get_attribute_values()) {
-                    for (int i = 0; i < sgParams.dimension; i++) {
-                        FPRINTF(stderr, "%s|", sgParams.p[i]);
-                    }
-                    FPRINTF(stderr,"\n");
+                if (NC_NOERR==sgParams.get_attribute_values()) {
+                    sgParams.dump(buf,1024);
+                    kvp[ strKey + ";_value" ] = buf;
                 }
-*/
             }
         }
         
     }
 #endif 
-
     return 0;
 }
 

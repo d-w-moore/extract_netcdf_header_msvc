@@ -21,15 +21,6 @@ struct attribute_params {
   {
   }
 
-  int get_attribute_values()  /* the API */
-  {
-      nc_inq_attlen(ncid,varid,name.c_str(),&dimension);
-      allocate_pointer_array();
-      //return nc_get_att(ncid,varid,name.c_str(),(void*)p);
-      return get_values_ ();
-  }
-
-  
   ~attribute_params() {
     //std::cout << typeid(p).name() << " : in the original\n";
     free(p);
@@ -37,7 +28,8 @@ struct attribute_params {
 private:
   void allocate_pointer_array() { p = static_cast<T*>(calloc(dimension, sizeof(T))); }
 
-  int get_values_ () {		
+  int get_values_ () //  -- the generic (non type-safe) version --
+  {
       return nc_get_att (ncid, varid, name.c_str(), (void*) p);
   }
 
@@ -46,6 +38,19 @@ private:
   int output_element_(int idx, char* buf, int &offset, int chremain);
 
 public:
+  /* the API , such as it is */
+  int get_attribute_values()  
+  {
+      int status = nc_inq_attlen(ncid,varid,name.c_str(),&dimension);
+      if (status == NC_NOERR) {
+          allocate_pointer_array();
+          //return nc_get_att(ncid,varid,name.c_str(),(void*)p);
+          return get_values_ ();
+      }
+      else {
+          return status;
+      }
+  }
   int dump(char *, int ) ;
 };
 
@@ -125,28 +130,21 @@ specialized_attribute_getter( long long , longlong )
 specialized_attribute_getter( unsigned int, uint )
 specialized_attribute_getter( unsigned long long, ulonglong )
 specialized_attribute_getter( char*, string )
-/* */
+specialized_attribute_getter( signed char, schar )
+specialized_attribute_getter( unsigned char, uchar )
 
 #undef ATT_GET_FN
 #undef concat2args
 
-/*
-     int nc_get_att_uchar     (int ncid, int varid, const char *name, unsigned char *up);
-     int nc_get_att_schar     (int ncid, int varid, const char *name, signed char *cp);
-     int nc_get_att_short     (int ncid, int varid, const char *name, short *sp);
-     int nc_get_att_int       (int ncid, int varid, const char *name, int *ip);
-     int nc_get_att_long      (int ncid, int varid, const char *name, long *lp);
-     int nc_get_att_float     (int ncid, int varid, const char *name, float *fp);
-     int nc_get_att_double    (int ncid, int varid, const char *name, double *dp);
-     int nc_get_att_ubyte     (int ncid, int varid, const char *name, unsigned char *ip);
-     int nc_get_att_ushort    (int ncid, int varid, const char *name, unsigned short *ip);
-     int nc_get_att_uint      (int ncid, int varid, const char *name, unsigned int *ip);
-     int nc_get_att_longlong  (int ncid, int varid, const char *name, long long *ip);
-     int nc_get_att_ulonglong (int ncid, int varid, const char *name, unsigned long long *ip);
+/*** compare:
      int nc_get_att_string    (int ncid, int varid, const char *name, char **ip);
   // int nc_get_att           (int ncid, int varid, const char *name, void *ip); 
   // int nc_get_att_text      (int ncid, int varid, const char *name, char *tp);
-
-*/
+  //
+  //-- look into these a bit more
+     int nc_get_att_uchar     (int ncid, int varid, const char *name, unsigned char *up);
+     int nc_get_att_ubyte     (int ncid, int varid, const char *name, unsigned char *ip);
+     int nc_get_att_schar     (int ncid, int varid, const char *name, signed char *cp);
+ ***/
 
 #endif // GET_ATTRIBUTE_VALUES_HPP
