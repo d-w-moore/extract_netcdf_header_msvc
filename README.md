@@ -68,6 +68,8 @@ The following support libraries should be installed before building and installi
      wget -qO - https://packages.irods.org/renci-irods.yum.repo | tee /etc/yum.repos.d/renci-irods.yum.repo
      yum install -y irods-server irods-database-plugin-postgres
      python /var/lib/irods/scripts/setup_irods.py   < /var/lib/irods/packaging/localhost_setup_postgres.input
+     
+     yum install -y irods-devel
      ```
 
    - cd into the repo top level directory, then `mkdir build; cd build`
