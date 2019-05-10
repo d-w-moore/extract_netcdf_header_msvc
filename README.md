@@ -1,7 +1,7 @@
 # NetCDF header extraction for iRODS
 
-This is a simple microservice , callable from any iRODS rule base, which can read the header data 
-from a NetCDF-formatted file in the filesystem. 
+This is a simple microservice , callable from any iRODS rule base, which can read the header data
+from a NetCDF-formatted file in the filesystem.
 
 The hierarchical structure of the NetCDF formatted
 data in the file (variable types, dimensions, etc.) is gathered into a KeyValuePair object as a list
@@ -14,17 +14,24 @@ The above use-case is codified in the demonstration script `src/reg_with_metadat
 ## Running the microservice demonstration script
 ----
 
-### System requirements 
+### System requirements
 
-The following support libraries should be installed before building and installing the microservice:
+The microservice has been built and tested for CentOS 7, but should be usable on other OS'es. (But note
+  that on Ubuntu,
+   1. ""-devel" package-name suffixes are shorted to "-dev"; and
+   1. libhdf5 packages and library names
+  are very different, and will require changes to CMakeLists.txt)
+
+
+On CentOS, the following support libraries should be installed before building and installing the microservice:
 
    - netcdf-devel
    - hdf5-devel
    - zlib-devel
 
-(As always when building iRODS software, make sure irods-devel is installed as well.)
+(As always when building microservices, irods-devel must be installed as well.)
 
-### Demonstration of usage on CentOS 7
+### Building, and demo use of, the microservice:
 
    - Enable the [EPEL](https://fedoraproject.org/wiki/EPEL) repo and install the above mentioned libraries.
      For example, in a `centos:7` docker container, we can do the following:
@@ -38,19 +45,19 @@ The following support libraries should be installed before building and installi
      ```
      #!/bin/bash
 
-     db_server_start_and_ready_wait() 
+     db_server_start_and_ready_wait()
      {
-       su - postgres -c '/usr/bin/pg_ctl -D /var/lib/pgsql/data -l logfile start'
-       while ! su postgres -c "psql -c '\l'" >/dev/null 2>&1
-       do
-	 sleep 1
-       done 
+         su - postgres -c '/usr/bin/pg_ctl -D /var/lib/pgsql/data -l logfile start'
+         while ! su postgres -c "psql -c '\l'" >/dev/null 2>&1
+         do
+             sleep 1
+         done
      }
 
-     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
-     yum install -y postgresql-server 
+     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+     yum install -y postgresql-server
 
-     su - postgres -c '/usr/bin/pg_ctl initdb ' 
+     su - postgres -c '/usr/bin/pg_ctl initdb '
      su - postgres -c 'sed -i.orig "s/^\(host.*\)trust$/\1md5/" /var/lib/pgsql/data/pg_hba.conf'
 
      db_server_start_and_ready_wait;
@@ -68,12 +75,12 @@ The following support libraries should be installed before building and installi
      wget -qO - https://packages.irods.org/renci-irods.yum.repo | tee /etc/yum.repos.d/renci-irods.yum.repo
      yum install -y irods-server irods-database-plugin-postgres
      python /var/lib/irods/scripts/setup_irods.py   < /var/lib/irods/packaging/localhost_setup_postgres.input
-     
+
      yum install -y irods-devel
      ```
 
    - cd into the repo top level directory, then `mkdir build; cd build`
-   - Build the microservice as a shared object. (May also need to change irods version number in the find_package directive in 
+   - Build the microservice as a shared object. (May also need to change irods version number in the find_package directive in
      CMakeLists.txt)
      ```
      cmake ../  && make && sudo install lib*.so /usr/lib/irods/plugins/microservices
@@ -87,3 +94,17 @@ The following support libraries should be installed before building and installi
      irods@host:/tmp$ irule -F reg_with_metadata.r "*phyFile='$(pwd)/test_hgroups.nc'"
      irods@host:/tmp$ imeta ls -d "~/test_hgroups.nc"
      ```
+### Optionally, to build the command line executable (with debug symbols, by default):
+
+   - cd to `build` subdirectory
+
+   - build with:
+     ```
+     sh ../Build_cmdline.sh`
+     ```
+
+   - run with 
+     ```
+     ./a.out somefile.nc
+     ```
+
