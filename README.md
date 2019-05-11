@@ -7,8 +7,7 @@ The hierarchical structure of the NetCDF formatted
 data in the file (variable types, dimensions, etc.) is gathered into a KeyValuePair object as a list
 of key-value pairs, which can then be associated to the file's data object once it is registered into iRODS.
 
-The above use-case is codified in the demonstration script `src/reg_with_metadata.r`.
-
+The above use case is codified in the demonstration script `src/reg_with_metadata.r`.
 
 
 ## Running the microservice demonstration script
@@ -16,11 +15,10 @@ The above use-case is codified in the demonstration script `src/reg_with_metadat
 
 ### System requirements
 
-The microservice has been built and tested for CentOS 7, but should be usable on other OS'es. (But note
+The microservice has been built and tested for CentOS 7, but should be adaptable to other OS'es. Note
   that on Ubuntu,
    1. ""-devel" package-name suffixes are shorted to "-dev"; and
-   1. libhdf5 packages and library names
-  are very different, and will require changes to CMakeLists.txt)
+   1. libhdf5 packages and library names are different, and CMakeLists.txt may require changes
 
 
 On CentOS, the following support libraries should be installed before building and installing the microservice:
@@ -94,14 +92,13 @@ On CentOS, the following support libraries should be installed before building a
      irods@host:/tmp$ irule -F reg_with_metadata.r "*phyFile='$(pwd)/test_hgroups.nc'"
      irods@host:/tmp$ imeta ls -d "~/test_hgroups.nc"
      ```
-### Optionally, to build the command line executable (with debug symbols, by default):
+### Optionally, to build the command line test executable (with debug symbols, by default):
 
    - cd to `build` subdirectory
 
    - build with:
      ```
      sh ../Build_cmdline.sh`
-     ```
 
    - run with 
      ```

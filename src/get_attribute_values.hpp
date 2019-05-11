@@ -22,10 +22,11 @@ struct attribute_params {
   }
 
   ~attribute_params() {
-    //std::cout << typeid(p).name() << " : in the original\n";
     free(p);
   }
+
 private:
+
   void allocate_pointer_array() { p = static_cast<T*>(calloc(dimension, sizeof(T))); }
 
   int get_values_ () //  -- the generic (non type-safe) version --
@@ -33,12 +34,14 @@ private:
       return nc_get_att (ncid, varid, name.c_str(), (void*) p);
   }
 
-  const char *fmt () {return "%s|";}
+  const char *fmt () {return "%p|";} //useless, but safe, and detects unimplemented types
   int final_offset () {return -1;}
   int output_element_(int idx, char* buf, int &offset, int chremain);
 
 public:
-  /* the API , such as it is */
+
+  /* our API , such as it is */
+
   int get_attribute_values()  
   {
       int status = nc_inq_attlen(ncid,varid,name.c_str(),&dimension);
@@ -51,7 +54,9 @@ public:
           return status;
       }
   }
+
   int dump(char *, int ) ;
+
 };
 
 template <typename T>
@@ -73,6 +78,7 @@ int attribute_params<T>::dump(char *buf, int bufsize)
     int sz = 0;
     int x = 0;
     int easyfit = 1;
+    if (bufsize > 0) { buf[bufsize] = '\0'; } // in case dimension is be zero
     while (x < dimension) {
         if (0 == (easyfit = output_element_( x++, buf, sz, bufsize - sz )))
         {
@@ -85,7 +91,7 @@ int attribute_params<T>::dump(char *buf, int bufsize)
 template <>
 attribute_params<char*>::~attribute_params ()
 {
-  //std::cout << typeid(p).name() << " : in the special case\n";
+  // -- documented in the NetCDF API as a special case
   if (p) {
     nc_free_string( dimension, p);
     free(p);
