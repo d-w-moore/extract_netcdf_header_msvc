@@ -19,6 +19,7 @@
 #include <netcdfcpp.h>
 
 using namespace std;
+using cstring = const char *;
 
 // We are writing 2D data, a 6 x 12 grid. 
 static const int NDIMS = 2;
@@ -63,10 +64,14 @@ main(void)
    NcDim* xDim = dataFile.add_dim("x", NX);
    NcDim* yDim = dataFile.add_dim("y", NY);
 
-   dataFile.add_att( "hello_float", 3, new float [3]{3.,4.,5.} );
+   dataFile.add_att( "hello_float", 1, "whatsnew");
+   //dataFile.add_att( "hello_float", 2, const_cast<const char **>( new cstring [2]{ "helo", "godbye" }));
+   dataFile.add_att( "hello_float", 3, new float [3]{3.f,4.f,5.f} );
+   dataFile.add_att( "hello_float", 3, new double [3]{3.,4.,5.} );
+
    ncbyte cstgring[] = { 'a','w','o','r','d' };
-   const char* cstgrings[] = { "here", "are", "four", "words"};
-   //dataFile.add_att( "hello_string", 4, cstgrings );
+// const char* cstgrings[] = { "here", "are", "four", "words"};
+// dataFile.add_att( "hello_string", 4, cstgrings );
   
    // Define a netCDF variable. The type of the variable in this case
    // is ncInt (32-bit integer).

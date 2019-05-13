@@ -12,7 +12,7 @@ template <typename T>
     try {
       retval = boost::lexical_cast<std::string>(inp);
     }
-    catch(boost::bad_lexical_cast&  e) { retval = "<noserializer>"; }
+    catch(boost::bad_lexical_cast&  e) { retval = "<no_serializer>"; }
     return retval;
   }
 

@@ -17,6 +17,7 @@
 #include <string>
 #include <cstdio>
 #include <cstdlib>
+#include <cstdint>
 #include <string>
 #include <cstring>
 #include <regex.h>
@@ -30,8 +31,16 @@
 #define s_i_pair(a) { #a, a }
 #define i_s_pair(a) { a, #a }
 
-#ifndef GET_ATTR_VALUES
-#define GET_ATTR_VALUES 0
+#ifndef IRODS_NETCDF_ATTRS // if > 0, will == logbase2 (dump buffer length) - 4
+                           // if == 0 ,will disable
+#define IRODS_NETCDF_ATTRS 1
+#elif IRODS_NETCDF_ATTRS > 0 &&\
+      IRODS_NETCDF_ATTRS <= 7
+#  define ATTR_BUFSIZE (1 << ((IRODS_NETCDF_ATTRS) + 4))
+#elif IRODS_NETCDF_ATTRS == 0
+#define ATTR_BUFSIZE 0
+#else
+#error IRODS_NETCDF_ATTRS must be in range [0,7]
 #endif
 
 #ifndef irods_build
@@ -61,6 +70,7 @@ typedef std::map< std::string,
 
 typedef std::map<std::string , int> Str_Int_MAP_t;
 typedef std::map<int , std::string> Int_Str_MAP_t;
+
 
 static Str_Int_MAP_t  nc_type_stoi { 
 
@@ -119,8 +129,7 @@ int do_attributes (std::string base_string,
         }
     }
 
-#if GET_ATTR_VALUES
-
+#if ATTR_BUFSIZE > 0
     for (int attI = 0; attI < *nattrs; attI++) {
         char name_A[NC_MAX_NAME+1];
         std::string  tmpStr, strKey = delimited(base_string) + (format("ATTR=%1%") % attI).str();
@@ -129,39 +138,54 @@ int do_attributes (std::string base_string,
           break;
         }
         nc_type  xtype_A;
-        char buf [1024];
+        char buf [ATTR_BUFSIZE];
         int offs = 0 ;
         if (NC_NOERR == nc_inq_atttype(ncid,varid,name_A,&xtype_A))  {
-            if (xtype_A == NC_FLOAT ) {
-                attribute_params<float> sgParams (ncid,varid,name_A);
-                if (NC_NOERR==sgParams.get_attribute_values()) {
-                    sgParams.dump(buf,1024);
-                    kvp[ strKey + ";_value" ] = buf;
-                }
+
+#define ATTRIBUTE_VALUES_TAG "_value"
+#define dump_attribute_type( PRIMITIVE_TYPE ) { \
+                attribute_params<PRIMITIVE_TYPE> sgParams (ncid,varid,name_A); \
+                if (NC_NOERR==sgParams.get_attribute_values()) { \
+                    sgParams.dump(buf,ATTR_BUFSIZE); \
+                    kvp[ strKey + ";" + ATTRIBUTE_VALUES_TAG ] = buf; \
+                } \
             }
-            else if (xtype_A == NC_INT ) {
-                attribute_params<int> sgParams (ncid,varid,name_A);
-                if (NC_NOERR==sgParams.get_attribute_values()) {
-                    sgParams.dump(buf,1024);
-                    kvp[ strKey + ";_value" ] = buf;
-                }
+
+/*
+ #define NC_BYTE         1       
+ #define NC_CHAR         2       
+ #define NC_SHORT        3       
+ #define NC_INT          4       
+ #define NC_LONG         NC_INT  
+ #define NC_FLOAT        5       
+ #define NC_DOUBLE       6       
+ #define NC_UBYTE        7       
+ #define NC_USHORT       8       
+ #define NC_UINT         9       
+ #define NC_INT64        10      
+ #define NC_UINT64       11      
+ #define NC_STRING       12  
+ * */
+            if      (xtype_A == NC_FLOAT)  { dump_attribute_type(float)    }
+            else if (xtype_A == NC_DOUBLE) { dump_attribute_type(double)   }
+            else if (xtype_A == NC_SHORT)  { dump_attribute_type(short)    }
+            else if (xtype_A == NC_USHORT) { dump_attribute_type(unsigned short) }
+            else if (xtype_A == NC_INT)    { dump_attribute_type(int)      }
+            else if (xtype_A == NC_UINT)   { dump_attribute_type(unsigned) }
+            else if (xtype_A == NC_LONG)   { dump_attribute_type(long)     }
+            else if (xtype_A == NC_INT64)  { dump_attribute_type(std::int64_t)  }
+            else if (xtype_A == NC_UINT64) { dump_attribute_type(std::uint64_t) }
+            else if (xtype_A == NC_BYTE)   { dump_attribute_type(unsigned char) } 
+            else if (xtype_A == NC_UBYTE)  { dump_attribute_type(unsigned char) }
+            else if (xtype_A == NC_CHAR)   { dump_attribute_type(char)     }
+            else if (xtype_A == NC_STRING) { dump_attribute_type(char*)    }
+            else { snprintf(buf,ATTR_BUFSIZE,"%s","<unsupported-attribute-type>");
+                   buf[ATTR_BUFSIZE - 1] = '\0';
+                   kvp[ strKey + ";" + ATTRIBUTE_VALUES_TAG ] = buf; 
             }
-            else if (xtype_A == NC_CHAR) {
-                attribute_params<char> sgParams (ncid,varid,name_A);
-                if (NC_NOERR==sgParams.get_attribute_values()) {
-                    sgParams.dump(buf,1024);
-                    kvp[ strKey + ";_value" ] = buf;
-                }
-            }
-            else if (xtype_A == NC_STRING) {
-                attribute_params<char*> sgParams (ncid,varid,name_A);
-                if (NC_NOERR==sgParams.get_attribute_values()) {
-                    sgParams.dump(buf,1024);
-                    kvp[ strKey + ";_value" ] = buf;
-                }
-            }
+
+            // ... put more type checks here to make attribute-dump impl complete
         }
-        
     }
 #endif 
     return 0;
