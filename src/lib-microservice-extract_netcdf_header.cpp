@@ -26,7 +26,8 @@
 
 #include "boost/format.hpp"
 #include "string_functions.hpp"
-#include "get_attribute_values.hpp"
+
+#include "get_attribute_values.hpp" // keep this as last include
 
 #define s_i_pair(a) { #a, a }
 #define i_s_pair(a) { a, #a }
@@ -166,6 +167,9 @@ int do_attributes (std::string base_string,
  #define NC_UINT64       11      
  #define NC_STRING       12  
  * */
+
+#define outputtype__ ,
+
             if      (xtype_A == NC_FLOAT)  { dump_attribute_type(float)    }
             else if (xtype_A == NC_DOUBLE) { dump_attribute_type(double)   }
             else if (xtype_A == NC_SHORT)  { dump_attribute_type(short)    }
@@ -175,8 +179,8 @@ int do_attributes (std::string base_string,
             else if (xtype_A == NC_LONG)   { dump_attribute_type(long)     }
             else if (xtype_A == NC_INT64)  { dump_attribute_type(std::int64_t)  }
             else if (xtype_A == NC_UINT64) { dump_attribute_type(std::uint64_t) }
-            else if (xtype_A == NC_BYTE)   { dump_attribute_type(unsigned char) } 
-            else if (xtype_A == NC_UBYTE)  { dump_attribute_type(unsigned char) }
+            else if (xtype_A == NC_BYTE)   { dump_attribute_type(char outputtype__ int) } 
+            else if (xtype_A == NC_UBYTE)  { dump_attribute_type(unsigned char outputtype__ UINT) }
             else if (xtype_A == NC_CHAR)   { dump_attribute_type(char)     }
             else if (xtype_A == NC_STRING) { dump_attribute_type(char*)    }
             else { snprintf(buf,ATTR_BUFSIZE,"%s","<unsupported-attribute-type>");

@@ -7,9 +7,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <netcdf.h>
 
-template <typename T>
+template <typename T, typename U = T>
 struct attribute_params {
   int ncid;
   int varid;
@@ -60,8 +61,8 @@ public:
 
 };
 
-template <typename T>
-int attribute_params<T>::output_element_(int idx, char* buf, int &offset, int chremain) 
+template <typename T, typename U>
+int attribute_params<T,U>::output_element_(int idx, char* buf, int &offset, int chremain) 
 {
     int headroom = chremain - 1 ;
     int i = headroom ;
@@ -70,10 +71,10 @@ int attribute_params<T>::output_element_(int idx, char* buf, int &offset, int ch
 
     if (headroom > 0) { 
         if ( is_pointer == nullptr ) {
-            i = snprintf(buf + offset, headroom, Format, p[idx]); 
+            i = snprintf(buf + offset, headroom, Format, static_cast<U>(p[idx]));
         }
         else {
-            i = snprintf(buf + offset, headroom, Format, intptr_t( p[idx] ));
+            i = snprintf(buf + offset, headroom, Format, p[idx] );
         }
     }
 
@@ -85,8 +86,8 @@ int attribute_params<T>::output_element_(int idx, char* buf, int &offset, int ch
     return 1;
 }
 
-template <typename T>
-int attribute_params<T>::dump(char *buf, int bufsize, bool use_ellipsis) 
+template <typename T, typename U>
+int attribute_params<T,U>::dump(char *buf, int bufsize, bool use_ellipsis) 
 {
     const char* Ellipsis = "...";
 
@@ -132,10 +133,20 @@ attribute_params<char*>::~attribute_params ()
   }
 }
 
-template<> int attribute_params<char>::final_offset () {return 0;}
+typedef unsigned int UINT;
+typedef unsigned char UCHAR;
 
-template<> const char *attribute_params<char>::fmt               () {return "%c";}
+template<> int attribute_params<char,char>::final_offset () {return 0;}    // NC_CHAR
+
+template<> int attribute_params<char,int>::final_offset () {return -1;}    // NC_BYTE
+template<> int attribute_params<UCHAR,UINT>::final_offset () {return -1;}  // NC_UBYTE
+
+template<> const char *attribute_params<char,char>::fmt          () {return "%c";}
+template<> const char *attribute_params<char,int>::fmt           () {return "%d|";} // NC_BYTE
+template<> const char *attribute_params<UCHAR,UINT>::fmt         () {return "%u|";} // NC_UBYTE
+
 template<> const char *attribute_params<char*>::fmt              () {return "%s|";}
+
 template<> const char *attribute_params<unsigned>::fmt           () {return "%u|";}
 template<> const char *attribute_params<int>::fmt                () {return "%d|";}
 template<> const char *attribute_params<short>::fmt              () {return "%hd|";}
@@ -162,6 +173,8 @@ int attribute_params<TYPE>::get_values_() {			\
 
 // partial specialization for each attribute type supported
 
+#define outputtype__ ,
+
 specialized_attribute_getter( double, double )
 specialized_attribute_getter( float, float )
 specialized_attribute_getter( short, short )
@@ -174,6 +187,11 @@ specialized_attribute_getter( unsigned long long, ulonglong )
 specialized_attribute_getter( char*, string )
 specialized_attribute_getter( signed char, schar )
 specialized_attribute_getter( unsigned char, uchar )
+specialized_attribute_getter( signed char outputtype__ int , schar )  // NC_BYTE
+specialized_attribute_getter( UCHAR outputtype__ UINT, uchar )        // NC_UBYTE
+
+#undef specialized_attribute_getter
+#undef outputtype__ 
 
 /*
  *   NETCDF C library's native, type-safe attribute "getters":
