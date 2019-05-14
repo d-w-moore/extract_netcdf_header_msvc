@@ -19,9 +19,8 @@ test()
     *fileBaseName = get_elem(*splitPath,-1,"")
     if (*fileBaseName != "") 
     {
-        if (0==
-            msiPhyPathReg ( "*targetColl/*fileBaseName",  "*resc", 
-                               "*phyFile", "null",  *status)) 
+        if (0 == msiPhyPathReg( "*targetColl/*fileBaseName",  "*resc", 
+                                 "*phyFile", "null",  *status )) 
         {
             writeLine("stdout","success registering file")
             if (0==msiextract_netcdf_header( *keyval_pairs , "*phyFile")) {

@@ -60,7 +60,7 @@ main(int argc, char *argv[])
 	const char* strings [] =  {"visit","another","world","party"};
         ERRCHK("string", nc_put_att_string (ncid, NC_GLOBAL, "mystring", 4,  strings));
 
-        const  signed  char schars[] = { 's', 'c', 'h', 'a', 'r', 's', 0 };
+        const  signed  char schars[] = { 's', 'c', 'h', 'a', 'r', 's', 0, '*' };
 	ERRCHK("signed char", nc_put_att_schar (ncid, NC_GLOBAL, "signed_chars", NC_BYTE, ARRAY_SIZE(schars), schars));
 
         const unsigned char ubytes[] = { 'u', 'b', 'y', 't', 'e', 's', -1 };
