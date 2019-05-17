@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+
+  icatdb:
+    hostname: dbhost
+    build:
+        context: .
+        dockerfile: Dockerfile.postgres
+    networks:
+        default:
+            aliases:
+                [ "dbhost" ]
+  irodsprov:
+    hostname: irodshost
+    build:
+        context: .
+        dockerfile: Dockerfile.provider
+    networks:
+        default:
+            aliases:
+                [ "irodshost" ]
+
+  metalnxdemo:
+    hostname: metalnxhost
+    image: "irods/metalnx"
+    ports: 
+     - "8080:8080"
+    volumes:
+     - /home/dmoore/GitHub/extract_netcdf_header_msvc/docker_demo/irods-ext:/etc/irods-ext:ro
+    networks:
+        default:
+            aliases:
+             - metalnxhost
+    depends_on:
+     - irodsprov
+     - icatdb
