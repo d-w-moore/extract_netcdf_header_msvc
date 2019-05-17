@@ -64,6 +64,17 @@ main(void)
    NcDim* xDim = dataFile.add_dim("x", NX);
    NcDim* yDim = dataFile.add_dim("y", NY);
 
+   NcDim* Dim1 = dataFile.add_dim("y1", NY);
+   NcDim* Dim2 = dataFile.add_dim("y2", 1);
+   NcDim* Dim3 = dataFile.add_dim("y3", 2);
+   NcDim* Dim4 = dataFile.add_dim("y4", 1);
+   NcDim* Dim5 = dataFile.add_dim("y5", 1);
+   NcDim* Dim6 = dataFile.add_dim("y6", 1);
+   NcDim* Dim7 = dataFile.add_dim("y7", 1);
+   NcDim* Dim8 = dataFile.add_dim("y8", 1);
+   NcDim* Dim9 = dataFile.add_dim("y9", 1);
+   NcDim* DimA = dataFile.add_dim("ya", 2);
+
    dataFile.add_att( "hello_float", 1, "whatsnew");
    //dataFile.add_att( "hello_float", 2, const_cast<const char **>( new cstring [2]{ "helo", "godbye" }));
    dataFile.add_att( "hello_float", 3, new float [3]{3.f,4.f,5.f} );
@@ -76,6 +87,13 @@ main(void)
    // Define a netCDF variable. The type of the variable in this case
    // is ncInt (32-bit integer).
    NcVar *data = dataFile.add_var("data", ncInt, xDim, yDim);
+
+#define ARRAY_SIZE(a) (sizeof(a)/sizeof((a)[0]))
+
+   const NcDim* dims[] = { xDim,yDim,Dim1,Dim2,Dim3,Dim4,
+                    Dim5,Dim6,Dim7,Dim8,Dim9,DimA  };
+
+   NcVar *data2 = dataFile.add_var("data2", ncInt, ARRAY_SIZE(dims),dims);
      
    // Write the pretend data to the file. Although netCDF supports
    // reading and writing subsets of data, in this case we write all
