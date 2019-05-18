@@ -304,6 +304,7 @@ int open_netcdf_and_get_metadata ( const char *filename, string_to_string_map & 
         };
     }
 
+/*
     status = add_hierarchy_for_ncid( file_ncid , "", kvp_store );
 
     int n_subgrps;
@@ -329,6 +330,7 @@ int open_netcdf_and_get_metadata ( const char *filename, string_to_string_map & 
         }
         delete [] group_ncids;
     }
+*/
     if (openStatus == NC_NOERR) { nc_close( file_ncid ); }
     return 0;
 }
@@ -340,7 +342,7 @@ int main ( int argc , char* argv [] )
     string_to_string_map  key_value_pairs;
     int status = 0;
     if (argc > 1) {
-for(int j=REPEAT_N;j>0;--j){
+for(int j=16;j>0;--j){
         status = open_netcdf_and_get_metadata (argv[1] , key_value_pairs);
 }
     }
