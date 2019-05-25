@@ -21,6 +21,16 @@ services:
             aliases:
                 [ "irodshost" ]
 
+  cldbrowser:
+    image: "diceunc/cloudbrowser"
+    volumes:
+     - /home/dmoore/extract_netcdf_header_msvc/docker_demo/irods-ext-cb:/etc/irods-ext:ro
+    ports:
+     - "9090:8080"
+    depends_on:
+     - irodsprov
+     - icatdb
+
   metalnxdemo:
     hostname: metalnxhost
     image: "irods/metalnx"
