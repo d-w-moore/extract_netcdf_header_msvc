@@ -33,6 +33,11 @@ else
 
 fi && echo >&2  $'\n\t --> IRODS Server is running \n'
 
+if yum list installed | grep irods-rule-engine-plugin-python >/dev/null 2>&1
+then
+    su - irods -c 'cp /etc/irods/core.py.template /etc/irods/core.py' && /jqeditconfig.sh 
+fi
+
 while true
 do
   sleep 1
