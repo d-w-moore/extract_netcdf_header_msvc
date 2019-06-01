@@ -37,7 +37,7 @@ services:
     ports: 
      - "8080:8080"
     volumes:
-     - /home/dmoore/GitHub/extract_netcdf_header_msvc/docker_demo/irods-ext:/etc/irods-ext:ro
+     - /home/dmoore/extract_netcdf_header_msvc/docker_demo/irods-ext:/etc/irods-ext:ro
     networks:
         default:
             aliases:
