@@ -1,13 +1,18 @@
 FROM centos:7
 
-RUN yum install -y wget vim wget
-
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+RUN yum install -y wget vim jq
 
 RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
     wget -qO - https://packages.irods.org/renci-irods.yum.repo | tee /etc/yum.repos.d/renci-irods.yum.repo &&\
     yum install -y python-psutil python-jsonschema &&\
-    yum install -y irods-icommands irods-server irods-database-plugin-postgres irods-rule-engine-plugin-python
+    yum install -y irods-icommands irods-server irods-database-plugin-postgres \
+      irods-rule-engine-plugin-python irods-devel
+
+RUN yum install -y irods-externals-\* gcc-c++
+
+RUN yum install -y openssl-devel python2-netcdf4 netcdf-devel netcdf-cxx-devel
 
 ADD dbhost_setup_postgres.input run_irods_provider.sh  /
 
@@ -17,10 +22,10 @@ ADD db_irods_metalnx.txt /
 
 ADD jqeditconfig.sh /
 
+COPY extractor_Msvc /root/extractor_Msvc
+
 RUN chmod +x /jqeditconfig.sh
 
 EXPOSE 1247 1248
-
-RUN yum install -y jq
 
 CMD [ "/run_irods_provider.sh" ]
