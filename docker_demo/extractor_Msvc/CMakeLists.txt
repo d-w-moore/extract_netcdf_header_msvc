@@ -101,7 +101,7 @@ install(
   TARGETS
   ${PLUGIN}
   LIBRARY
-    DESTINATION usr/lib/irods/plugins/microservices
+    DESTINATION /usr/lib/irods/plugins/microservices
   )
 
 set(CPACK_PACKAGE_FILE_NAME "irods-microservice-extract_netcdf_header-${IRODS_VERSION}-${IRODS_LINUX_DISTRIBUTION_NAME}${IRODS_LINUX_DISTRIBUTION_VERSION_MAJOR}-${CMAKE_SYSTEM_PROCESSOR}")
