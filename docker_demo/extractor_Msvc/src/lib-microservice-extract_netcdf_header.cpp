@@ -91,12 +91,15 @@ static Int_Str_MAP_t  nc_type_itos {
 namespace {
   std::map<int,bool> seen;
   std::map<int,std::string> ncid_names;
-  std::deque<int> all_ncids;
 }
 
 
-int retrieve_all_ncids (int top_ncid , std::string root_name, string_to_string_map & kvp)
+struct ncid_retrieve_error {int error;};
+
+std::vector<int> 
+retrieve_all_ncids (int top_ncid , std::string root_name, string_to_string_map & kvp)
 {
+    std::vector<int> all_ncids;
     std::deque<int> ncid_iter;
 
     int ncid = top_ncid;
@@ -104,48 +107,52 @@ int retrieve_all_ncids (int top_ncid , std::string root_name, string_to_string_m
 
     while (! seen [ncid]) {
 
-	seen[ncid] = true;
+        seen[ncid] = true;
 
-	int n_subgrps;
-	int status = nc_inq_grps ( ncid, &n_subgrps, nullptr );    // find how many subgroups
-	if (status != NC_NOERR) { return status; }
+        int n_subgrps;
+
+        int status = nc_inq_grps ( ncid, &n_subgrps, nullptr );    // find how many subgroups
+        if (status != NC_NOERR) { throw ncid_retrieve_error {status}; }
 
         const std::string parent_index_path = ncid_names [ncid];
 
-	if (n_subgrps > 0) {
-	    int *grp_ncids = new int [n_subgrps];
-	    status = nc_inq_grps ( ncid, &n_subgrps, grp_ncids );    // enumerate subgroups
-	    if (status == NC_NOERR) {
-		char grpname [NC_MAX_NAME+1]="";
-		for (int i=0;i<n_subgrps;i++)
-		{
+        if (n_subgrps > 0) {
+            int *grp_ncids = new int [n_subgrps];
+            int status = nc_inq_grps ( ncid, &n_subgrps, grp_ncids );    // enumerate subgroups
+            if (status != NC_NOERR) { throw ncid_retrieve_error {status}; }
+            else {
+                char grpname [NC_MAX_NAME+1]="";
+                for (int i=0;i<n_subgrps;i++)
+                {
                     int found_ncid =  grp_ncids[i];
 
-		    int stat = nc_inq_grpname (found_ncid, grpname) ;
+                    int stat = nc_inq_grpname (found_ncid, grpname) ;
 
-		    PRINTF("\tncid #%d = %d group = '%s'\n",i,found_ncid,grpname);
+                    PRINTF("\tncid #%d = %d group = '%s'\n",i,found_ncid,grpname);
 
-		    const std::string index_new { (boost::format("%1%GROUP=%2%")
+                    const std::string index_new { (boost::format("%1%GROUP=%2%")
                                                      % (parent_index_path.size() ?  parent_index_path + ";"  : "")
                                                      % i ).str()
                     };
 
-		    kvp [ index_new + ";ncid" ] = Stringize( found_ncid );
-		    kvp [ index_new + ";name" ] = Stringize( grpname );
+                    kvp [ index_new + ";ncid" ] = Stringize( found_ncid );
+                    kvp [ index_new + ";name" ] = Stringize( grpname );
 
+                    ncid_iter.push_back( found_ncid );
+                    all_ncids.push_back( found_ncid );
                     ncid_names [ found_ncid ] = index_new;
-		}
-	    }
+                }
+            }
 
-	    delete [] grp_ncids;
-	    if (status != NC_NOERR) { return status; }
-	}
+            delete [] grp_ncids;
+            if (status != NC_NOERR) { throw ncid_retrieve_error {status}; }
+        }
 
-	ncid_iter.pop_front();
-	if (ncid_iter.empty()) break;
-	ncid = ncid_iter.front();
+        ncid_iter.pop_front();
+        if (ncid_iter.empty()) break;
+        ncid = ncid_iter.front();
     }
-    return NC_NOERR;
+    return  all_ncids;
 }
 
 static std::string delimited (std::string s, char d=';')
@@ -410,7 +417,7 @@ for(int j=REPEAT_N;j>0;--j){
     }
     cerr << "\n\n\t************** KEY_VALUE_PAIRS **************\n\n";
     for (auto const &pr : key_value_pairs) {
-		cerr << "\t" << pr.first << "\t\t" << pr.second << endl;
+                cerr << "\t" << pr.first << "\t\t" << pr.second << endl;
     }
     return status;
 }
