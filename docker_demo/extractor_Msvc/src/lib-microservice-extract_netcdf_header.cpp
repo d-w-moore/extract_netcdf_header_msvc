@@ -6,7 +6,7 @@
 
 #include "icatHighLevelRoutines.hpp"
 #include "rcMisc.h"
-  
+
 #include "irods_re_structs.hpp"
 
 // =-=-=-=-=-=-=-
@@ -21,7 +21,7 @@
 #include <string>
 #include <cstring>
 #include <regex.h>
- 
+
 #include <netcdf.h>
 
 #include "boost/format.hpp"
@@ -60,7 +60,7 @@ namespace {
 #  define FFLUSH std::fflush
 #endif
 
-struct bad_input_file 
+struct bad_input_file
 {
   int return_code = 0;
   std::string message ;
@@ -73,7 +73,7 @@ typedef std::map<std::string , int> Str_Int_MAP_t;
 typedef std::map<int , std::string> Int_Str_MAP_t;
 
 
-static Str_Int_MAP_t  nc_type_stoi { 
+static Str_Int_MAP_t  nc_type_stoi {
 
     s_i_pair(NC_NAT), s_i_pair(NC_BYTE), s_i_pair(NC_CHAR), s_i_pair(NC_SHORT),
     s_i_pair(NC_INT), s_i_pair(NC_FLOAT), s_i_pair(NC_DOUBLE), s_i_pair(NC_UBYTE),
@@ -82,14 +82,75 @@ static Str_Int_MAP_t  nc_type_stoi {
 
 static Int_Str_MAP_t  nc_type_itos {
 
-    i_s_pair(NC_NAT), i_s_pair(NC_BYTE), i_s_pair(NC_CHAR), i_s_pair(NC_SHORT), 
+    i_s_pair(NC_NAT), i_s_pair(NC_BYTE), i_s_pair(NC_CHAR), i_s_pair(NC_SHORT),
     i_s_pair(NC_INT), i_s_pair(NC_FLOAT), i_s_pair(NC_DOUBLE), i_s_pair(NC_UBYTE),
     i_s_pair(NC_USHORT), i_s_pair(NC_UINT), i_s_pair(NC_INT64), i_s_pair(NC_UINT64), i_s_pair(NC_STRING)
 };
 
-static std::string delimited (std::string s, char d=';') 
+
+namespace {
+  std::map<int,bool> seen;
+  std::map<int,std::string> ncid_names;
+  std::deque<int> all_ncids;
+}
+
+
+int retrieve_all_ncids (int top_ncid , std::string root_name, string_to_string_map & kvp)
 {
-    return s.empty() ? s : s+d; 
+    std::deque<int> ncid_iter;
+
+    int ncid = top_ncid;
+    ncid_names[ncid] = root_name;
+
+    while (! seen [ncid]) {
+
+	seen[ncid] = true;
+
+	int n_subgrps;
+	int status = nc_inq_grps ( ncid, &n_subgrps, nullptr );    // find how many subgroups
+	if (status != NC_NOERR) { return status; }
+
+        const std::string parent_index_path = ncid_names [ncid];
+
+	if (n_subgrps > 0) {
+	    int *grp_ncids = new int [n_subgrps];
+	    status = nc_inq_grps ( ncid, &n_subgrps, grp_ncids );    // enumerate subgroups
+	    if (status == NC_NOERR) {
+		char grpname [NC_MAX_NAME+1]="";
+		for (int i=0;i<n_subgrps;i++)
+		{
+                    int found_ncid =  grp_ncids[i];
+
+		    int stat = nc_inq_grpname (found_ncid, grpname) ;
+
+		    PRINTF("\tncid #%d = %d group = '%s'\n",i,found_ncid,grpname);
+
+		    const std::string index_new { (boost::format("%1%GROUP=%2%")
+                                                     % (parent_index_path.size() ?  parent_index_path + ";"  : "")
+                                                     % i ).str()
+                    };
+
+		    kvp [ index_new + ";ncid" ] = Stringize( found_ncid );
+		    kvp [ index_new + ";name" ] = Stringize( grpname );
+
+                    ncid_names [ found_ncid ] = index_new;
+		}
+	    }
+
+	    delete [] grp_ncids;
+	    if (status != NC_NOERR) { return status; }
+	}
+
+	ncid_iter.pop_front();
+	if (ncid_iter.empty()) break;
+	ncid = ncid_iter.front();
+    }
+    return NC_NOERR;
+}
+
+static std::string delimited (std::string s, char d=';')
+{
+    return s.empty() ? s : s+d;
 }
 
 int do_attributes (std::string base_string,
@@ -113,7 +174,7 @@ int do_attributes (std::string base_string,
         if (status == NC_NOERR) { int id  = -1;
             std::string  tmpStr, strKey = delimited(base_string) + (format("ATTR=%1%") % attI).str();
             nc_type  xtype_A;
-            size_t   plen_A; 
+            size_t   plen_A;
 
             kvp[ tmpStr = strKey + ";name" ] = name_A;
             PRINTF ("%s\t%s\n" ,tmpStr.c_str(), name_A );
@@ -153,19 +214,19 @@ int do_attributes (std::string base_string,
             }
 
 /*
- #define NC_BYTE         1       
- #define NC_CHAR         2       
- #define NC_SHORT        3       
- #define NC_INT          4       
- #define NC_LONG         NC_INT  
- #define NC_FLOAT        5       
- #define NC_DOUBLE       6       
- #define NC_UBYTE        7       
- #define NC_USHORT       8       
- #define NC_UINT         9       
- #define NC_INT64        10      
- #define NC_UINT64       11      
- #define NC_STRING       12  
+ #define NC_BYTE         1
+ #define NC_CHAR         2
+ #define NC_SHORT        3
+ #define NC_INT          4
+ #define NC_LONG         NC_INT
+ #define NC_FLOAT        5
+ #define NC_DOUBLE       6
+ #define NC_UBYTE        7
+ #define NC_USHORT       8
+ #define NC_UINT         9
+ #define NC_INT64        10
+ #define NC_UINT64       11
+ #define NC_STRING       12
  * */
 
 #define outputtype__ ,
@@ -179,19 +240,19 @@ int do_attributes (std::string base_string,
             else if (xtype_A == NC_LONG)   { dump_attribute_type(long)     }
             else if (xtype_A == NC_INT64)  { dump_attribute_type(std::int64_t)  }
             else if (xtype_A == NC_UINT64) { dump_attribute_type(std::uint64_t) }
-            else if (xtype_A == NC_BYTE)   { dump_attribute_type(char outputtype__ int) } 
+            else if (xtype_A == NC_BYTE)   { dump_attribute_type(char outputtype__ int) }
             else if (xtype_A == NC_UBYTE)  { dump_attribute_type(unsigned char outputtype__ UINT) }
             else if (xtype_A == NC_CHAR)   { dump_attribute_type(char)     }
             else if (xtype_A == NC_STRING) { dump_attribute_type(char*)    }
             else { snprintf(buf,ATTR_BUFSIZE,"%s","<unsupported-attribute-type>");
                    buf[ATTR_BUFSIZE - 1] = '\0';
-                   kvp[ strKey + ";" + ATTRIBUTE_VALUES_TAG ] = buf; 
+                   kvp[ strKey + ";" + ATTRIBUTE_VALUES_TAG ] = buf;
             }
 
             // ... put more type checks here to make attribute-dump impl complete
         }
     }
-#endif 
+#endif
     return 0;
 }
 
@@ -224,13 +285,13 @@ int add_hierarchy_for_ncid
 
     int group_ndims;
     int group_dimids[NC_MAX_DIMS];
-    if (NC_NOERR == nc_inq_dimids(ncid, &group_ndims, group_dimids, 0/* include_parents*/)) 
+    if (NC_NOERR == nc_inq_dimids(ncid, &group_ndims, group_dimids, 0/* include_parents*/))
     {
         for (int i=0;i<group_ndims;i++) {
             int dimId = group_dimids[i];
             size_t lenp;
             char dim_name[NC_MAX_NAME+1];
-            int status = nc_inq_dim (ncid, dimId, dim_name, &lenp); 
+            int status = nc_inq_dim (ncid, dimId, dim_name, &lenp);
             PRINTF("INQ_DIM @ ncid=%d dimI= %d => dim_name = '%s' lenp='%d'\n",ncid,dimId,dim_name,(int)lenp);
             if (status==NC_NOERR) {
                 string dimLabel = delimited(base_string) + (format("DIM_%1%") % i).str();
@@ -243,7 +304,7 @@ int add_hierarchy_for_ncid
 
     vector<string> var_names ;
 
-    for (int varI = 0; varI < nvars; varI++) 
+    for (int varI = 0; varI < nvars; varI++)
     {
         string VAR_n_label = delimited( base_string ) + (format("VAR=%1%") % varI).str();
 
@@ -254,7 +315,7 @@ int add_hierarchy_for_ncid
         int var_type,var_ndims,var_dimids[NC_MAX_VAR_DIMS],var_natts;
         int status = nc_inq_var (ncid, varI, name, &var_type, &var_ndims, var_dimids, &var_natts);
 
-        if (NC_NOERR != do_attributes (VAR_n_label , kvp , ncid , varI , &var_natts)) { 
+        if (NC_NOERR != do_attributes (VAR_n_label , kvp , ncid , varI , &var_natts)) {
             FPRINTF(stderr , "Error: could not get attributes for variable");
             return 2;
         }
@@ -269,7 +330,7 @@ int add_hierarchy_for_ncid
         {
             std::size_t lenp;
             char dim_name [NC_MAX_NAME+1] = "*";
-            int inq_dim_status = nc_inq_dim (ncid, var_dimids[dimN], dim_name, &lenp); 
+            int inq_dim_status = nc_inq_dim (ncid, var_dimids[dimN], dim_name, &lenp);
             if (inq_dim_status == NC_NOERR) {
                 PRINTF("\tdimN %d (id %d) name = '%s' length = %u\n",dimN,var_dimids[dimN],dim_name,unsigned(lenp));
                 var_dimlengths . push_back(lenp);
@@ -277,7 +338,7 @@ int add_hierarchy_for_ncid
                 kvp[ vardim_N_label + ";id" ] = Stringize(var_dimids[dimN]);
                 kvp[ vardim_N_label + ";name" ] = dim_name;
                 kvp[ vardim_N_label + ";len" ] = Stringize(lenp);
-            } 
+            }
             else { FPRINTF(stderr,"Error: could not retrieve dimension %d\n", dimN); }
         }
         if (var_dimlengths.size() > 0) kvp[ delimited(VAR_n_label) + "_dimlengths" ] = Join( var_dimlengths );
@@ -298,8 +359,8 @@ int open_netcdf_and_get_metadata ( const char *filename, string_to_string_map & 
         || (parseStatus = nc_inq(file_ncid, &ndims, &nvars, &ngatts, &unlimdimid)) != NC_NOERR)
     {
         throw bad_input_file {
-          SYS_BAD_INPUT, 
-          (boost::format("Couldn't open NETCDF file. Status ( open = %1% , parse =  %2%)" ) 
+          SYS_BAD_INPUT,
+          (boost::format("Couldn't open NETCDF file. Status ( open = %1% , parse =  %2%)" )
             % openStatus % parseStatus).str()
         };
     }
@@ -308,14 +369,14 @@ int open_netcdf_and_get_metadata ( const char *filename, string_to_string_map & 
 
     int n_subgrps;
     status = nc_inq_grps ( file_ncid, &n_subgrps, nullptr );    // find how many subgroups
-        
+
     if (n_subgrps > 0) {
         int *group_ncids = new int [n_subgrps];
         int group_inq_status = nc_inq_grps ( file_ncid, &n_subgrps, group_ncids );
 
-        if (group_inq_status == NC_NOERR) { 
+        if (group_inq_status == NC_NOERR) {
             char grpname [NC_MAX_NAME+1]="";
-            for (int i=0;i<n_subgrps;i++) 
+            for (int i=0;i<n_subgrps;i++)
             {
                 int stat = nc_inq_grpname (group_ncids[i], grpname) ;
                 PRINTF("\tncid #%d = %d group = '%s'\n",i,group_ncids[i],grpname);
@@ -334,7 +395,7 @@ int open_netcdf_and_get_metadata ( const char *filename, string_to_string_map & 
 }
 
 #if !(irods_build)
-int main ( int argc , char* argv [] ) 
+int main ( int argc , char* argv [] )
 {
     using namespace std;
     string_to_string_map  key_value_pairs;
@@ -361,10 +422,10 @@ int msiextract_netcdf_header(
     ruleExecInfo_t* rei )
 {
     char *netCDF_FileName = NULL;
-    //std::vector<std::string> keys, values; 
+    //std::vector<std::string> keys, values;
 
     string_to_string_map key_value_pairs;
-   
+
     /* Parse filename */
 
     if ( ( netCDF_FileName = parseMspForStr( msp_netCDF_FileName ) ) == NULL ) {
@@ -374,13 +435,13 @@ int msiextract_netcdf_header(
 
     int status = 0;
     try {
-        status = open_netcdf_and_get_metadata (netCDF_FileName , key_value_pairs); 
+        status = open_netcdf_and_get_metadata (netCDF_FileName , key_value_pairs);
     }
     catch ( bad_input_file & Error ) {
         rodsLog(LOG_NOTICE , Error.message.c_str() );
         return Error.return_code;
     }
-    catch(...) { 
+    catch(...) {
         status = -1;
         rodsLog(LOG_NOTICE , "Unknown error in NetCDF metadata extraction");
     }
@@ -393,7 +454,7 @@ int msiextract_netcdf_header(
         rodsLog( LOG_ERROR, "msiAddKeyVal: inKeyValPair is not of type KeyValPair_MS_T." );
         return USER_PARAM_TYPE_ERR;
     }
- 
+
     /* Parse inKeyValPair. Create new one if empty. */
 
     if ( !inKeyValPair->inOutStruct )
@@ -409,12 +470,12 @@ int msiextract_netcdf_header(
 
     rei->status = 0;
 
-    for (auto const & kvp : key_value_pairs) 
+    for (auto const & kvp : key_value_pairs)
     {
-        rei->status = addKeyVal( (keyValPair_t*) inKeyValPair->inOutStruct, 
+        rei->status = addKeyVal( (keyValPair_t*) inKeyValPair->inOutStruct,
                                  kvp.first.c_str(),
                                  kvp.second.c_str() );
-        if (rei->status != 0) { 
+        if (rei->status != 0) {
             rodsLog( LOG_ERROR, "Bad value from  addKeyVal \n"  );
             return (rei->status);
         }

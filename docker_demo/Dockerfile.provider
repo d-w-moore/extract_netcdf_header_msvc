@@ -7,8 +7,11 @@ RUN yum install -y wget vim jq
 RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
     wget -qO - https://packages.irods.org/renci-irods.yum.repo | tee /etc/yum.repos.d/renci-irods.yum.repo &&\
     yum install -y python-psutil python-jsonschema &&\
-    yum install -y irods-icommands irods-server irods-database-plugin-postgres \
-      irods-rule-engine-plugin-python irods-devel
+    yum install -y irods-icommands-4.2.5-1 \
+                   irods-server-4.2.5-1 \
+                   irods-database-plugin-postgres-4.2.5-1  \
+                   irods-rule-engine-plugin-python-4.2.5-1 \
+                   irods-devel-4.2.5-1
 
 RUN yum install -y irods-externals-\* gcc-c++
 
@@ -25,6 +28,9 @@ ADD jqeditconfig.sh /
 COPY extractor_Msvc /root/extractor_Msvc
 
 RUN chmod +x /jqeditconfig.sh
+
+RUN cd /root/extractor_Msvc && mkdir obj && cd obj && \
+    /opt/irods-externals/cmake3.5.2-0/bin/cmake .. && make install
 
 EXPOSE 1247 1248
 
