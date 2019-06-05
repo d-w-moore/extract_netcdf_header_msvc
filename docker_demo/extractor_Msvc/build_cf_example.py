@@ -5,6 +5,7 @@ from netCDF4 import *
 d = Dataset ("/tmp/example1.nc", "w")
 
 gp_aa = d.createGroup("aa")
+gp_cc = d.createGroup("cc")
 gp_aa_bb = gp_aa.createGroup('bb')
 
 d.createDimension('e',6)
