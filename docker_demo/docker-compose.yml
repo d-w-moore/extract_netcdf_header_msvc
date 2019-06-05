@@ -20,6 +20,9 @@ services:
         default:
             aliases:
                 [ "irodshost" ]
+    cap_add:
+        - SYS_PTRACE
+
 
   cldbrowser:
     image: "diceunc/cloudbrowser:1.0.2.0-beta4"

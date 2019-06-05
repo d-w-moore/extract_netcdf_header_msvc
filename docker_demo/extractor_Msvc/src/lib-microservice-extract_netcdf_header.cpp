@@ -88,24 +88,29 @@ static Int_Str_MAP_t  nc_type_itos {
 };
 
 
-namespace {
-  std::map<int,bool> seen;
-  std::map<int,std::string> ncid_names;
+namespace
+{
+  std::map<int,std::string> ncid_group_index;
+  std::map<int,std::string> ncid_path;
 }
-
 
 struct ncid_retrieve_error {int error;};
 
-std::vector<int> 
-retrieve_all_ncids (int top_ncid , std::string root_name, string_to_string_map & kvp)
+std::vector<int>
+get_ncids_breadth_first (int top_ncid , std::string root_name, string_to_string_map & kvp)
 {
+    std::map<int,bool> seen;
     std::vector<int> all_ncids;
     std::deque<int> ncid_iter;
 
-    int ncid = top_ncid;
-    ncid_names[ncid] = root_name;
+    int ncid;
+    ncid_path [ncid = top_ncid] = "/";
+    ncid_group_index [ncid] = root_name;  // - indices is "[root_name;]GROUP_x;GROUP_y;..." for nested x -> y
+    all_ncids.push_back( ncid );
 
-    while (! seen [ncid]) {
+    ncid_iter.push_back( ncid );
+
+    while (!seen[ncid]) {
 
         seen[ncid] = true;
 
@@ -114,7 +119,7 @@ retrieve_all_ncids (int top_ncid , std::string root_name, string_to_string_map &
         int status = nc_inq_grps ( ncid, &n_subgrps, nullptr );    // find how many subgroups
         if (status != NC_NOERR) { throw ncid_retrieve_error {status}; }
 
-        const std::string parent_index_path = ncid_names [ncid];
+        const std::string  parent_index_path = ncid_group_index [ncid];
 
         if (n_subgrps > 0) {
             int *grp_ncids = new int [n_subgrps];
@@ -139,8 +144,12 @@ retrieve_all_ncids (int top_ncid , std::string root_name, string_to_string_map &
                     kvp [ index_new + ";name" ] = Stringize( grpname );
 
                     ncid_iter.push_back( found_ncid );
+
+                    std::string parentString { ncid_path [ ncid ] };
+                    std::string separator { parentString.size() > 0 && parentString.back() == '/' ? "" : "/" };
+                    ncid_path [ found_ncid ] = parentString + separator + grpname;
                     all_ncids.push_back( found_ncid );
-                    ncid_names [ found_ncid ] = index_new;
+                    ncid_group_index [ found_ncid ] = index_new;
                 }
             }
 
@@ -372,6 +381,7 @@ int open_netcdf_and_get_metadata ( const char *filename, string_to_string_map & 
         };
     }
 
+    get_ncids_breadth_first (file_ncid ,"", kvp_store);
     status = add_hierarchy_for_ncid( file_ncid , "", kvp_store );
 
     int n_subgrps;
@@ -408,9 +418,7 @@ int main ( int argc , char* argv [] )
     string_to_string_map  key_value_pairs;
     int status = 0;
     if (argc > 1) {
-for(int j=REPEAT_N;j>0;--j){
         status = open_netcdf_and_get_metadata (argv[1] , key_value_pairs);
-}
     }
     else {
         status = 1;
