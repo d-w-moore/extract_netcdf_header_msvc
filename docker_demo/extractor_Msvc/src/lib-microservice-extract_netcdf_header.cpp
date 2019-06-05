@@ -90,27 +90,38 @@ static Int_Str_MAP_t  nc_type_itos {
 
 namespace
 {
-  std::map<int,std::string> ncid_group_index;
   std::map<int,std::string> ncid_path;
+  std::map<int,std::string> ncid_group_index;
 }
 
-struct ncid_retrieve_error {int error;};
+struct ncid_retrieve_error {int nc_error_code;};
+
+/* 
+ * call once per NetCDF input file:
+ */
 
 std::vector<int>
 get_ncids_breadth_first (int top_ncid , std::string root_name, string_to_string_map & kvp)
 {
     std::map<int,bool> seen;
-    std::vector<int> all_ncids;
+    std::vector<int> ordered_ncids;
     std::deque<int> ncid_iter;
 
-    int ncid;
-    ncid_path [ncid = top_ncid] = "/";
-    ncid_group_index [ncid] = root_name;  // - indices is "[root_name;]GROUP_x;GROUP_y;..." for nested x -> y
-    all_ncids.push_back( ncid );
+    /* Globals and side effects.
+     * Clean this up! - dwm
+     */
+    ncid_path.clear();
+    ncid_group_index.clear();
+    
+    ncid_path [top_ncid] = "/";
+    ncid_group_index [top_ncid] = root_name;  // - indices of form "[root_name;]GROUP_x;GROUP_y;..."
+                                              // - for nested groups numbered (x, y, ...)
+    ordered_ncids.push_back( top_ncid );
+    ncid_iter.push_back( top_ncid );
 
-    ncid_iter.push_back( ncid );
+    int ncid = top_ncid;
 
-    while (!seen[ncid]) {
+    while (!seen[ncid]) {  // for each ncid (integer group id) found in file
 
         seen[ncid] = true;
 
@@ -127,13 +138,13 @@ get_ncids_breadth_first (int top_ncid , std::string root_name, string_to_string_
             if (status != NC_NOERR) { throw ncid_retrieve_error {status}; }
             else {
                 char grpname [NC_MAX_NAME+1]="";
-                for (int i=0;i<n_subgrps;i++)
+                for (int i=0;i<n_subgrps;i++)     // get and record group name for each ncid
                 {
                     int found_ncid =  grp_ncids[i];
 
                     int stat = nc_inq_grpname (found_ncid, grpname) ;
 
-                    PRINTF("\tncid #%d = %d group = '%s'\n",i,found_ncid,grpname);
+                    //PRINTF("\tncid #%d = %d group = '%s'\n",i,found_ncid,grpname);
 
                     const std::string index_new { (boost::format("%1%GROUP=%2%")
                                                      % (parent_index_path.size() ?  parent_index_path + ";"  : "")
@@ -148,7 +159,7 @@ get_ncids_breadth_first (int top_ncid , std::string root_name, string_to_string_
                     std::string parentString { ncid_path [ ncid ] };
                     std::string separator { parentString.size() > 0 && parentString.back() == '/' ? "" : "/" };
                     ncid_path [ found_ncid ] = parentString + separator + grpname;
-                    all_ncids.push_back( found_ncid );
+                    ordered_ncids.push_back( found_ncid );
                     ncid_group_index [ found_ncid ] = index_new;
                 }
             }
@@ -161,7 +172,7 @@ get_ncids_breadth_first (int top_ncid , std::string root_name, string_to_string_
         if (ncid_iter.empty()) break;
         ncid = ncid_iter.front();
     }
-    return  all_ncids;
+    return  ordered_ncids;
 }
 
 static std::string delimited (std::string s, char d=';')
@@ -264,8 +275,6 @@ int do_attributes (std::string base_string,
                    buf[ATTR_BUFSIZE - 1] = '\0';
                    kvp[ strKey + ";" + ATTRIBUTE_VALUES_TAG ] = buf;
             }
-
-            // ... put more type checks here to make attribute-dump impl complete
         }
     }
 #endif
@@ -381,34 +390,30 @@ int open_netcdf_and_get_metadata ( const char *filename, string_to_string_map & 
         };
     }
 
-    get_ncids_breadth_first (file_ncid ,"", kvp_store);
-    status = add_hierarchy_for_ncid( file_ncid , "", kvp_store );
-
-    int n_subgrps;
-    status = nc_inq_grps ( file_ncid, &n_subgrps, nullptr );    // find how many subgroups
-
-    if (n_subgrps > 0) {
-        int *group_ncids = new int [n_subgrps];
-        int group_inq_status = nc_inq_grps ( file_ncid, &n_subgrps, group_ncids );
-
-        if (group_inq_status == NC_NOERR) {
-            char grpname [NC_MAX_NAME+1]="";
-            for (int i=0;i<n_subgrps;i++)
-            {
-                int stat = nc_inq_grpname (group_ncids[i], grpname) ;
-                PRINTF("\tncid #%d = %d group = '%s'\n",i,group_ncids[i],grpname);
-                const std::string root_group { (boost::format("GROUP=%1%") % i).str() };
-
-                kvp_store [ root_group + ";ncid" ] = Stringize( group_ncids [i] );
-                kvp_store [ root_group + ";name" ] = Stringize( grpname );
-
-                add_hierarchy_for_ncid ( group_ncids[i], root_group, kvp_store );
-            }
-        }
-        delete [] group_ncids;
+    std::vector <int> all_ncids;
+    try 
+    {
+      all_ncids = get_ncids_breadth_first (file_ncid ,"", kvp_store);
     }
+    catch (ncid_retrieve_error& Error ) {
+      status = Error.nc_error_code;
+      FPRINTF(stderr, "NetCDF lib error while getting file group structure\n%s\n", nc_strerror(status));
+    }
+
+    FPRINTF (stderr,"NCIDs/groups in order:");
+    for (int ncid : all_ncids)
+    {
+  
+        std::string group_key =  ncid_group_index [ncid];
+        std::string group_path =  ncid_path [ncid];
+
+        FPRINTF (stderr,"\t %ld\t %s\t '%s'\n",long(ncid),group_path.c_str(),group_key.c_str());
+
+        add_hierarchy_for_ncid ( ncid, group_key, kvp_store );
+    }
+
     if (openStatus == NC_NOERR) { nc_close( file_ncid ); }
-    return 0;
+    return status;
 }
 
 #if !(irods_build)
