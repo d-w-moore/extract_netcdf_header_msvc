@@ -87,7 +87,6 @@ static Int_Str_MAP_t  nc_type_itos {
     i_s_pair(NC_USHORT), i_s_pair(NC_UINT), i_s_pair(NC_INT64), i_s_pair(NC_UINT64), i_s_pair(NC_STRING)
 };
 
-
 namespace
 {
   std::map<int,std::string> ncid_path;
@@ -95,6 +94,11 @@ namespace
 }
 
 struct ncid_retrieve_error {int nc_error_code;};
+
+static std::string delimited (std::string s, char d=';')
+{
+    return s.empty() ? s : s+d;
+}
 
 /* 
  * call once per NetCDF input file:
@@ -146,9 +150,8 @@ get_ncids_breadth_first (int top_ncid , std::string root_name, string_to_string_
 
                     //PRINTF("\tncid #%d = %d group = '%s'\n",i,found_ncid,grpname);
 
-                    const std::string index_new { (boost::format("%1%GROUP=%2%")
-                                                     % (parent_index_path.size() ?  parent_index_path + ";"  : "")
-                                                     % i ).str()
+                    const std::string index_new { 
+                        delimited(parent_index_path) + (boost::format("%1%_GROUP") % i ).str()
                     };
 
                     kvp [ index_new + ";ncid" ] = Stringize( found_ncid );
@@ -175,11 +178,6 @@ get_ncids_breadth_first (int top_ncid , std::string root_name, string_to_string_
     return  ordered_ncids;
 }
 
-static std::string delimited (std::string s, char d=';')
-{
-    return s.empty() ? s : s+d;
-}
-
 int do_attributes (std::string base_string,
                    string_to_string_map & kvp,
                    int ncid,
@@ -199,7 +197,7 @@ int do_attributes (std::string base_string,
         char name_A[NC_MAX_NAME+1];
         int status =  nc_inq_attname(ncid, varid, attI, name_A);
         if (status == NC_NOERR) { int id  = -1;
-            std::string  tmpStr, strKey = delimited(base_string) + (format("ATTR=%1%") % attI).str();
+            std::string  tmpStr, strKey = delimited(base_string) + (format("%1%_ATTR") % attI).str();
             nc_type  xtype_A;
             size_t   plen_A;
 
@@ -221,7 +219,7 @@ int do_attributes (std::string base_string,
 #if ATTR_BUFSIZE > 0
     for (int attI = 0; attI < *nattrs; attI++) {
         char name_A[NC_MAX_NAME+1];
-        std::string  tmpStr, strKey = delimited(base_string) + (format("ATTR=%1%") % attI).str();
+        std::string  tmpStr, strKey = delimited(base_string) + (format("%1%_ATTR") % attI).str();
         int status =  nc_inq_attname(ncid, varid, attI, name_A);
         if (status != NC_NOERR) {
           break;
@@ -319,7 +317,7 @@ int add_hierarchy_for_ncid
             int status = nc_inq_dim (ncid, dimId, dim_name, &lenp);
             PRINTF("INQ_DIM @ ncid=%d dimI= %d => dim_name = '%s' lenp='%d'\n",ncid,dimId,dim_name,(int)lenp);
             if (status==NC_NOERR) {
-                string dimLabel = delimited(base_string) + (format("DIM_%1%") % i).str();
+                string dimLabel = delimited(base_string) + (format("%1%_DIM") % i).str();
                 kvp[dimLabel + ";name" ] = dim_name;
                 kvp[dimLabel + ";len" ] = Stringize(lenp);
                 kvp[dimLabel + ";id" ] = Stringize(dimId);
@@ -331,9 +329,10 @@ int add_hierarchy_for_ncid
 
     for (int varI = 0; varI < nvars; varI++)
     {
-        string VAR_n_label = delimited( base_string ) + (format("VAR=%1%") % varI).str();
+        string VAR_n_label = delimited( base_string ) + (format("%1%_VAR") % varI).str();
 
         vector<int> var_dimlengths ;
+        vector<std::string> var_dimNames ;
 
         char name [NC_MAX_NAME+1]  = "";
 
@@ -357,16 +356,18 @@ int add_hierarchy_for_ncid
             char dim_name [NC_MAX_NAME+1] = "*";
             int inq_dim_status = nc_inq_dim (ncid, var_dimids[dimN], dim_name, &lenp);
             if (inq_dim_status == NC_NOERR) {
-                PRINTF("\tdimN %d (id %d) name = '%s' length = %u\n",dimN,var_dimids[dimN],dim_name,unsigned(lenp));
+                //PRINTF("\tdimN %d (id %d) name = '%s' length = %u\n",dimN,var_dimids[dimN],dim_name,unsigned(lenp));
                 var_dimlengths . push_back(lenp);
-                string vardim_N_label = delimited(VAR_n_label) + (format("DIM_%1%") % dimN).str();
+                var_dimNames . push_back(dim_name);
+                string vardim_N_label = delimited(VAR_n_label) + (format("%1%_DIMS") % dimN).str();
                 kvp[ vardim_N_label + ";id" ] = Stringize(var_dimids[dimN]);
                 kvp[ vardim_N_label + ";name" ] = dim_name;
                 kvp[ vardim_N_label + ";len" ] = Stringize(lenp);
             }
-            else { FPRINTF(stderr,"Error: could not retrieve dimension %d\n", dimN); }
+            else { FPRINTF(stderr,"Error: could not retrieve variable dimension %d\n", dimN); }
         }
-        if (var_dimlengths.size() > 0) kvp[ delimited(VAR_n_label) + "_dimlengths" ] = Join( var_dimlengths );
+        if (var_dimlengths.size() > 0) kvp[ delimited(VAR_n_label) + "_dimLengths" ] = Join( var_dimlengths );
+        if (var_dimNames.size() > 0) kvp[ delimited(VAR_n_label) + "_dimNames" ] = Join( var_dimNames   );
         kvp[ delimited(VAR_n_label) + "name" ] = name;
         kvp[ delimited(VAR_n_label) + "type" ] = nc_type_itos [ var_type ];
     }

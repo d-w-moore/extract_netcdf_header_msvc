@@ -58,5 +58,8 @@ then
     /opt/irods-externals/libarchive3.3.2-0/lib/libarchive.so /usr/lib64/libcrypto.so \
     -Wl,-rpath,/opt/irods-externals/boost1.60.0-0/lib:/opt/irods-externals/libarchive3.3.2-0/lib:$LD_RUN \
     -g -o netcdf_debug
+
+# /opt/irods-externals/clang3.8-0/bin/clang++ -O0 -DNDEBUG -stdlib=libc++ lib-microservice-extract_netcdf_header.cpp.o -lc++abi -lnetcdf -lhdf5_serial -lz /opt/irods-externals/boost1.60.0-0/lib/libboost_filesystem.so /opt/irods-externals/boost1.60.0-0/lib/libboost_system.so /opt/irods-externals/libarchive3.3.2-0/lib/libarchive.so /usr/lib/x86_64-linux-gnu/libcrypto.so -Wl,-rpath,/opt/irods-externals/boost1.60.0-0/lib:/opt/irods-externals/libarchive3.3.2-0/lib:/opt/irods-externals/clang-runtime3.8-0/lib -g -o netcdf_debug
+
 fi
 
