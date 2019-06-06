@@ -1,0 +1,1 @@
+iquest '%s/%s  NAME %s   VALUE %s' "select COLL_NAME,DATA_NAME, META_DATA_ATTR_NAME, META_DATA_ATTR_VALUE where META_DATA_ATTR_NAME = 'irods::netcdf' and META_DATA_ATTR_VALUE like '%ATTR;_value=%outhl%' "

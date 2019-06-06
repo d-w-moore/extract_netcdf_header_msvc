@@ -1,7 +1,6 @@
-# NetCDF header extraction for iRODS
+# Demo - NetCDF header extraction for iRODS
 
-This is a simple microservice , callable from any iRODS rule base, which can read the header data
-from a NetCDF-formatted file in the filesystem.
+Currently this is a single microservice which reads a NetCDF-4 or compatible header from \*.nc files put to the iRODS catalog.
 
 The hierarchical structure of the NetCDF formatted
 data in the file (variable types, dimensions, etc.) is gathered into a KeyValuePair object as a list
@@ -10,13 +9,19 @@ of key-value pairs, which can then be associated to the file's data object once 
 The above use case is codified in the demonstration script `src/reg_with_metadata.r`.
 
 
-## Running the microservice demonstration script
+
+---
+
+## Running the microservice demonstration  (Docker Compose)
 ----
+
+## Running the microservice demonstration  (On an already installed ICAT server)
 
 ### System requirements
 
-The microservice has been built and tested for CentOS 7, but should be adaptable to other OS'es. Note
-  that on Ubuntu,
+At present microservice has is available for CentOS 7, but can be adapted to run on other operating systems.
+
+Note that on Debian/Ubuntu:
    1. ""-devel" package-name suffixes are shorted to "-dev"; and
    1. libhdf5 packages and library names are different, and CMakeLists.txt may require changes
 
@@ -99,7 +104,7 @@ On CentOS, the following support libraries should be installed before building a
    - build with:
      ```
      sh ../Build_cmdline.sh`
-
+     ```
    - run with 
      ```
      ./a.out somefile.nc
