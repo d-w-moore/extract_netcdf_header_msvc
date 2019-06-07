@@ -27,7 +27,7 @@ services:
   cldbrowser:
     image: "diceunc/cloudbrowser:1.0.2.0-beta4"
     volumes:
-     - /home/dmoore/extract_netcdf_header_msvc/docker_demo/irods-ext-cb:/etc/irods-ext:ro
+     - ./irods-ext-cb:/etc/irods-ext:ro
     ports:
      - "9090:8080"
     depends_on:
@@ -40,7 +40,7 @@ services:
     ports: 
      - "8080:8080"
     volumes:
-     - /home/dmoore/extract_netcdf_header_msvc/docker_demo/irods-ext:/etc/irods-ext:ro
+     - ./irods-ext:/etc/irods-ext:ro
     networks:
         default:
             aliases:
