@@ -50,15 +50,15 @@ This microservice
       - open up a separate terminal and open up `/home/dmoore/extract_netcdf_header_msvc/docker_demo/post_put.core.re`
       - in the iRODS provider's root shell, enter : `su - irods` and use a text editor to append the contents of that file to the system's `/etc/irods/core.re`
       
-   * To submit sample data to the icat, run the following script (also requires docker):
+   * To generate submit sample data containing NetCDF headers to be scanned into the iRODS metadata catalog:
 
-      - run `./extract_netcdf_header_msvc/example/create_example_data`
+      - run the script : `./extract_netcdf_header_msvc/example/create_example_data`  (also requires docker be installed)
 
-      - this should create a number of .nc files in `.../example/data`
+      - this should create a number of .nc files in the `data` subdirectory located in the same directory as the script.
 
-      - navigate here in one of the browser clients and upload some or all of the example files
+      - navigate to these data files when prompted by Cloudbrowser or Metalnx during an upload ("PUT") operation.
 
-      - queries may be made in the GUI or using the `iquest` command line:
+      - queries may be made either in the GUI or by using an approprate argument on the `iquest` command line:
 
         ```
         iquest '%s/%s  NAME %s   VALUE %s' "select COLL_NAME,DATA_NAME, META_DATA_ATTR_NAME, META_DATA_ATTR_VALUE where META_DATA_ATTR_NAME = 'irods::netcdf' and META_DATA_ATTR_VALUE like '%ATTR;_value=%South%' "
