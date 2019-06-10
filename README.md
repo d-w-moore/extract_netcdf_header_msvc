@@ -26,7 +26,7 @@ This microservice
 
    * clone this repository
 
-   * cd into ./extract_netcdf_header_msvc/docker_demo and run:
+   * cd into `./extract_netcdf_header_msvc/docker_demo` and run:
 
      ```
      docker-compose up
@@ -59,7 +59,22 @@ This microservice
       - navigate to these data files when prompted by Cloudbrowser or Metalnx during an upload ("PUT") operation.
 
       - both browser clients allow inspection of the iRODS metadata  attached to the \*.nc files. This appears as a set of multiple NAME/VALUE combinations with a NAME value of `irods::netcdf` and a VALUE which describes the hierarchical path and value of an individual NetCDF entity ( dimension,variable,attribute,etc.)  Each NetCDF entity thus described may have several "structure members" enumerated. ( eg. \_value, name, length)
-      - queries may be made either in the GUI or by using an approprate argument on the `iquest` command line:
+      
+      - queries may be made either in a GUI client:
+      
+         1 *CloudBrowser example* : 
+         
+            * left (Attr-Name) search field => `irods::netcdf`
+            * drop down => 'like'
+            * right (Attr-Value) search field => `%South%'
+            
+         2 *MetaLnx example* :
+         
+            * left (Attr-Name)search field => `irods::netcdf`
+            * drop down => 'contains'
+            * right (Attr-Value) search field => `South`
+         
+      or by using an approprate argument on the `iquest` command line:
 
         ```
         iquest '%s/%s  NAME %s   VALUE %s' "select COLL_NAME,DATA_NAME, META_DATA_ATTR_NAME, META_DATA_ATTR_VALUE where META_DATA_ATTR_NAME = 'irods::netcdf' and META_DATA_ATTR_VALUE like '%ATTR;_value=%South%' "
