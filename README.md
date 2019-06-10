@@ -58,6 +58,7 @@ This microservice
 
       - navigate to these data files when prompted by Cloudbrowser or Metalnx during an upload ("PUT") operation.
 
+      - both browser clients allow inspection of the iRODS metadata  attached to the \*.nc files. This appears as a set of multiple TAG/VALUE combinations with a TAG value of `irods::netcdf` and a VALUE which describes the hierarchical path and value of each dimension,variable,attribute,etc.  Each NetCDF entity described may have several "structure members" enumerated. ( eg. \_value, name, length)
       - queries may be made either in the GUI or by using an approprate argument on the `iquest` command line:
 
         ```
