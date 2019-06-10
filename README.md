@@ -46,6 +46,10 @@ This microservice
 
      The login is rods/rods
 
+   * `docker exec -it docker_demo_irodsprov_{XX_YY} bash` where XX and YY will most likely be instance numbers or perhaps a partial hexadecimal hash, depending on the  version of docker-compose being used . Once inside the provider node, place  a bit of policy into  to that node's `/etc/irods/core.re` which will cause NetCDF header to be entered into the ICAT database after the successful 'put' of any  file with an extension of `.nc`
+      - open up a separate terminal and open up `/home/dmoore/extract_netcdf_header_msvc/docker_demo/post_put.core.re`
+      - in the iRODS provider's root shell, enter : `su - irods` and use a text editor to append the contents of that file to the system's `/etc/irods/core.re`
+      
    * To submit sample data to the icat, run the following script (also requires docker):
 
       - run `./extract_netcdf_header_msvc/example/create_example_data`
