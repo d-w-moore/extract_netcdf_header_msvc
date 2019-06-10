@@ -1,0 +1,8 @@
+#!/bin/bash
+
+docker build -t create_netcdf4_for_extract . # --no-cache
+
+docker run --user $(id -u):$(id -g) \
+           -v $(pwd)/data:/data:rw  \
+           -w /data                 \
+           create_netcdf4_for_extract
