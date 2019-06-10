@@ -64,15 +64,15 @@ This microservice
       
          1 *CloudBrowser example* : 
          
-            * left (Attr-Name) search field => `irods::netcdf`
+            * left (Attr-Name) search field => irods::netcdf
             * drop down => 'like'
-            * right (Attr-Value) search field => `%South%'
+            * right (Attr-Value) search field => %South%
             
          2 *MetaLnx example* :
          
-            * left (Attr-Name)search field => `irods::netcdf`
+            * left (Attr-Name)search field => irods::netcdf
             * drop down => 'contains'
-            * right (Attr-Value) search field => `South`
+            * right (Attr-Value) search field => South
          
       or by using an approprate argument on the `iquest` command line:
 
