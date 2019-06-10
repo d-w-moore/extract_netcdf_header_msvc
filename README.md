@@ -1,112 +1,61 @@
-# Demo - NetCDF header extraction for iRODS
 
-Currently this is a single microservice which reads a NetCDF-4 or compatible header from \*.nc files put to the iRODS catalog.
+# NetCDF header extraction microservice for iRODS
 
-The hierarchical structure of the NetCDF formatted
-data in the file (variable types, dimensions, etc.) is gathered into a KeyValuePair object as a list
-of key-value pairs, which can then be associated to the file's data object once it is registered into iRODS.
 
-The above use case is codified in the demonstration script `src/reg_with_metadata.r`.
+## General description
 
+This repository contains a microservice for pulling the relevant descriptive metadata from files
+as they are placed under management by iRODS.
+
+This microservice
+
+   * can be called from any rule file or rule-base, allowing both manual and policy-driven use.
+
+   * is self-contained and located in the the docker_demo/extractor_Msvc
+
+   * at this point, targets CentOS 7
+
+   * may be demonstrated  from both GUI and command-line query viewpoints by running the docker-compose demo, also included in this repo.
 
 
 ---
 
-## Running the microservice demonstration  (Docker Compose)
-----
+## To run the demonstration:
+ 
+   * install docker-compose
 
-## Running the microservice demonstration  (On an already installed ICAT server)
+   * clone this repository
 
-### System requirements
+   * cd into ./extract_netcdf_header_msvc/docker_demo and run:
 
-At present microservice has is available for CentOS 7, but can be adapted to run on other operating systems.
-
-Note that on Debian/Ubuntu:
-   1. ""-devel" package-name suffixes are shorted to "-dev"; and
-   1. libhdf5 packages and library names are different, and CMakeLists.txt may require changes
-
-
-On CentOS, the following support libraries should be installed before building and installing the microservice:
-
-   - netcdf-devel
-   - hdf5-devel
-   - zlib-devel
-
-(As always when building microservices, irods-devel must be installed as well.)
-
-### Building, and demo use of, the microservice:
-
-   - Enable the [EPEL](https://fedoraproject.org/wiki/EPEL) repo and install the above mentioned libraries.
-     For example, in a `centos:7` docker container, we can do the following:
      ```
-     # yum install wget
-     # wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-     # rpm -ivh epel-release-latest-7.noarch.rpm
-     # yum install {netcdf,hdf5,zlib}-devel
-     ```
-   - install iRODS from packages.  In Docker, from basic centos:7, you can do this with the following script:
-     ```
-     #!/bin/bash
-
-     db_server_start_and_ready_wait()
-     {
-         su - postgres -c '/usr/bin/pg_ctl -D /var/lib/pgsql/data -l logfile start'
-         while ! su postgres -c "psql -c '\l'" >/dev/null 2>&1
-         do
-             sleep 1
-         done
-     }
-
-     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-     yum install -y postgresql-server
-
-     su - postgres -c '/usr/bin/pg_ctl initdb '
-     su - postgres -c 'sed -i.orig "s/^\(host.*\)trust$/\1md5/" /var/lib/pgsql/data/pg_hba.conf'
-
-     db_server_start_and_ready_wait;
-
-     cat >/tmp/db_commands.txt <<'EOF'
-     CREATE DATABASE "ICAT";
-     CREATE USER irods WITH PASSWORD 'testpassword';
-     GRANT ALL PRIVILEGES ON DATABASE "ICAT" to irods;
-     \q
-     EOF
-
-     su - postgres -c 'psql -f /tmp/db_commands.txt'
-     yum install -y wget
-     rpm --import https://packages.irods.org/irods-signing-key.asc
-     wget -qO - https://packages.irods.org/renci-irods.yum.repo | tee /etc/yum.repos.d/renci-irods.yum.repo
-     yum install -y irods-server irods-database-plugin-postgres
-     python /var/lib/irods/scripts/setup_irods.py   < /var/lib/irods/packaging/localhost_setup_postgres.input
-
-     yum install -y irods-devel
+     docker-compose up
      ```
 
-   - cd into the repo top level directory, then `mkdir build; cd build`
-   - Build the microservice as a shared object. (May also need to change irods version number in the find_package directive in
-     CMakeLists.txt)
-     ```
-     cmake ../  && make && sudo install lib*.so /usr/lib/irods/plugins/microservices
-     ```
-   - copy `src/reg_with_metadata.r` to /tmp
-   - as irods service account make sure we're in /tmp and download an example NetCDF binary data file
-     ```
-     myuser@host:~$ su - irods
-     irods@host:~$ cd /tmp
-     irods@host:/tmp$ wget https://www.unidata.ucar.edu/software/netcdf/examples/test_hgroups.nc
-     irods@host:/tmp$ irule -F reg_with_metadata.r "*phyFile='$(pwd)/test_hgroups.nc'"
-     irods@host:/tmp$ imeta ls -d "~/test_hgroups.nc"
-     ```
-### Optionally, to build the command line test executable (with debug symbols, by default):
+     at a terminal command line.
 
-   - cd to `build` subdirectory
 
-   - build with:
-     ```
-     sh ../Build_cmdline.sh`
-     ```
-   - run with 
-     ```
-     ./a.out somefile.nc
-     ```
+   * the demo may take a good half-minute to come up; after the start-up is done, one can log in to
+     the Metalnx and Cloudbrowser graphical interfaces by bringing up a browser on the host machine and
+     using these URL's respectively:
 
+      - http://localhost:8080/metalnx
+
+      - http://localhost:9090/irods-cloud-backend
+
+
+     The login is rods/rods
+
+   * To submit sample data to the icat, run the following script (also requires docker):
+
+      - run `./extract_netcdf_header_msvc/example/create_example_data`
+
+      - this should create a number of .nc files in `.../example/data`
+
+      - navigate here in one of the browser clients and upload some or all of the example files
+
+      - queries may be made in the GUI or using the `iquest` command line:
+
+        ```
+        iquest '%s/%s  NAME %s   VALUE %s' "select COLL_NAME,DATA_NAME, META_DATA_ATTR_NAME, META_DATA_ATTR_VALUE where META_DATA_ATTR_NAME = 'irods::netcdf' and META_DATA_ATTR_VALUE like '%ATTR;_value=%South%' "
+        ```
