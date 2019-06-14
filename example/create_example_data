@@ -3,6 +3,8 @@
 SCRIPT_DIR=$(dirname "$0")
 cd "$SCRIPT_DIR"
 
+mkdir -p data
+
 docker build -t create_netcdf4_for_extract . # --no-cache
 
 docker run --user $(id -u):$(id -g) \
