@@ -11,6 +11,7 @@ services:
         default:
             aliases:
                 [ "dbhost" ]
+
   irodsprov:
     hostname: irodshost
     build:
@@ -20,6 +21,20 @@ services:
         default:
             aliases:
                 [ "irodshost" ]
+    cap_add:
+        - SYS_PTRACE
+
+  irodscons:
+    hostname: consumer
+    build:
+        context: .
+        dockerfile: Dockerfile.consumer
+    networks:
+        default:
+            aliases:
+                [ "consumer" ]
+    depends_on:
+     - irodsprov
     cap_add:
         - SYS_PTRACE
 

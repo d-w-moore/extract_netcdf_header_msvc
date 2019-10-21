@@ -1,0 +1,21 @@
+
+FROM centos:7
+
+RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+RUN yum install -y wget vim jq less
+
+RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
+    wget -qO - https://packages.irods.org/renci-irods.yum.repo | tee /etc/yum.repos.d/renci-irods.yum.repo &&\
+    yum install -y python-psutil python-jsonschema &&\
+    yum install -y irods-server-4.2.5-1
+
+#RUN yum install -y irods-externals-\* gcc-c++ gdb
+#RUN yum install -y openssl-devel python2-netcdf4 netcdf-devel netcdf-cxx-devel
+ADD run_irods_consumer.sh  /
+
+RUN chmod +x /run_irods_consumer.sh
+
+EXPOSE 1247 1248
+
+CMD [ "/run_irods_consumer.sh" ]
