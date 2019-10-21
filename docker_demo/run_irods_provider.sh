@@ -11,10 +11,10 @@ do
 done
 
 
-## ---- Set up db for ICAT and Metalnx  ----
+## ---- Set up db for ICAT 
 ## -----------------------------------------
 
-psql -U postgres -h dbhost -f /db_irods_metalnx.txt
+psql -U postgres -h dbhost -f /db_irods.txt
 
 
 ## ---- Configure (or Run) irods server ----
@@ -32,11 +32,6 @@ else
   service irods start
 
 fi && echo >&2  $'\n\t --> IRODS Server is running \n'
-
-if yum list installed | grep irods-rule-engine-plugin-python >/dev/null 2>&1
-then
-    su - irods -c 'cp /etc/irods/core.py.template /etc/irods/core.py' && /jqeditconfig.sh 
-fi
 
 while true
 do

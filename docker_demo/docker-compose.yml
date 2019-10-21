@@ -11,6 +11,7 @@ services:
         default:
             aliases:
                 [ "dbhost" ]
+
   irodsprov:
     hostname: irodshost
     build:
@@ -25,28 +26,18 @@ services:
     cap_add:
         - SYS_PTRACE
 
-
-  cldbrowser:
-    image: "diceunc/cloudbrowser:1.0.2.0-beta4"
-    volumes:
-     - ./irods-ext-cb:/etc/irods-ext:ro
-    ports:
-     - "9090:8080"
-    depends_on:
-     - irodsprov
-     - icatdb
-
-  metalnxdemo:
-    hostname: metalnxhost
-    image: "irods/metalnx:2.0.0"
-    ports: 
-     - "8080:8080"
-    volumes:
-     - ./irods-ext:/etc/irods-ext:ro
+  irodscons:
+    hostname: consumer
+    build:
+        context: .
+        dockerfile: Dockerfile.consumer
+        args:
+          irods_vsn: ${irods_version}
     networks:
         default:
             aliases:
-             - metalnxhost
+                [ "consumer" ]
     depends_on:
      - irodsprov
-     - icatdb
+    cap_add:
+        - SYS_PTRACE
