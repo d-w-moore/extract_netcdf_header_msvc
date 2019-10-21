@@ -5,7 +5,7 @@ ARG irods_vsn
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 RUN yum install -y epel-release
 
-RUN yum install -y wget vim jq
+RUN yum install -y wget vim jq less
 
 RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
     wget -qO - https://packages.irods.org/renci-irods.yum.repo | tee /etc/yum.repos.d/renci-irods.yum.repo &&\
