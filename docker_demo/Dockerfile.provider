@@ -1,6 +1,6 @@
 FROM centos:7
 
-ARG irods_vsn="4.2.7"
+ARG irods_vsn="4.2.8"
 
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 RUN yum install -y epel-release
@@ -16,7 +16,7 @@ RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
                    irods-rule-engine-plugin-python-${irods_vsn}-1 \
                    irods-devel-${irods_vsn}-1
 
-RUN yum install -y irods-externals-\* gcc-c++ gdb
+RUN yum install -y irods-externals-\* gcc-c++ gdb rpm-build
 
 RUN yum install -y openssl-devel python2-netcdf4 netcdf-devel netcdf-cxx-devel
 
@@ -33,7 +33,7 @@ COPY extractor_Msvc /root/extractor_Msvc
 RUN chmod +x /jqeditconfig.sh
 
 RUN cd /root/extractor_Msvc && mkdir obj && cd obj && \
-    /opt/irods-externals/cmake3.5.2-0/bin/cmake -DCMAKE_BUILD_TYPE=Debug .. && make install
+    /opt/irods-externals/cmake3.11.4-0/bin/cmake -DCMAKE_BUILD_TYPE=Debug .. && make install
 
 EXPOSE 1247 1248
 
