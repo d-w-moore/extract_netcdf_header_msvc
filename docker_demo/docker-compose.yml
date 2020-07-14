@@ -16,6 +16,8 @@ services:
     build:
         context: .
         dockerfile: Dockerfile.provider
+        args:
+          irods_vsn: ${irods_version}
     networks:
         default:
             aliases:
